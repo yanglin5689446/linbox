@@ -13,7 +13,7 @@ const styles = theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: SideBar.width,
+    marginLeft: SideBar.width / 4,
   },
   contentShift: {
     transition: theme.transitions.create('margin', {

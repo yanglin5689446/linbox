@@ -19,7 +19,7 @@ const styles = theme => ({
     zIndex: 1000,
   },
   grow: {
-    flexGrow: 2,
+    flexBasis: '300px',
   },
   otherComponents: {
     flexGrow: 2,

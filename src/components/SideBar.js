@@ -20,11 +20,12 @@ import ReportIcon from '@material-ui/icons/Report'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
+import AppBar from './AppBar';
 
 const styles = () => ({
   drawerPaper: {
     width: SideBar.width,
-    marginTop: 10,
+    marginTop: AppBar.height,
     padding: 5,
     background: 'transparent',
     border: 'none',

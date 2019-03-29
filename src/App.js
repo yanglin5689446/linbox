@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import { BrowserRouter, Switch } from 'react-router-dom'
 import { Route } from 'react-router'
 import CssBaseline from '@material-ui/core/CssBaseline'
-
 import Layout from 'components/Layout'
+
+import Inbox from 'pages/Inbox'
+
 import './App.css'
 
 const Dummy = (name) => () => (<div>{name}</div>)
@@ -15,7 +17,7 @@ class App extends Component {
         <CssBaseline />
         <Layout>
           <Switch>
-            <Route exact path='/' component={Dummy('index')} />
+            <Route exact path='/' component={Inbox} />
             <Route path='/snoozed' component={Dummy('snoozed')} />
             <Route path='/done' component={Dummy('done')} />
             <Route path='/drafts' component={Dummy('drafts')} />
