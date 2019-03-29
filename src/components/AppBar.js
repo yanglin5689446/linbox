@@ -14,9 +14,6 @@ import MenuIcon from '@material-ui/icons/Menu'
 import SearchIcon from '@material-ui/icons/Search'
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-  },
   grow: {
     flexGrow: 2,
   },
@@ -58,7 +55,7 @@ const styles = theme => ({
 
 const AppBar = ({ classes }) => {
   return (
-    <MUIAppBar position="fixed">
+    <MUIAppBar position="sticky" className={classes.appBar}>
       <Toolbar>
         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
           <MenuIcon />
