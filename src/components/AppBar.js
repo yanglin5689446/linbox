@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React from 'react'
 import {
   withStyles,
   AppBar as MUIAppBar,
@@ -14,6 +14,10 @@ import MenuIcon from '@material-ui/icons/Menu'
 import SearchIcon from '@material-ui/icons/Search'
 
 const styles = theme => ({
+  appBar: {
+    height: AppBar.height,
+    zIndex: 1000,
+  },
   grow: {
     flexGrow: 2,
   },
@@ -53,11 +57,19 @@ const styles = theme => ({
   }
 })
 
-const AppBar = ({ classes }) => {
+const AppBar = ({ classes, toggleSideBar }) => {
   return (
-    <MUIAppBar position="sticky" className={classes.appBar}>
+    <MUIAppBar
+      position="sticky"
+      className={classes.appBar}
+    >
       <Toolbar>
-        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+        <IconButton
+          className={classes.menuButton}
+          color="inherit"
+          aria-label="Menu"
+          onClick={toggleSideBar}
+        >
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" color="inherit" className={classes.grow}>
@@ -80,5 +92,7 @@ const AppBar = ({ classes }) => {
     </MUIAppBar>
   )
 }
+
+AppBar.height = 64
 
 export default withStyles(styles)(AppBar)
