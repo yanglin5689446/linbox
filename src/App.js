@@ -1,10 +1,15 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from 'react'
+import { BrowserRouter } from 'react-router-dom'
+
+import AppBar from 'components/AppBar'
+import './App.css'
 
 class App extends Component {
   render() {
     return (
-      <div>Hello linbox!</div>
+      <BrowserRouter>
+        <AppBar />
+      </BrowserRouter>
     );
   }
 }
