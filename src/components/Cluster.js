@@ -31,7 +31,7 @@ const styles = () => ({
   },
 })
 
-const ThreadGroup = ({ classes, name }) => {
+const Cluster = ({ classes, name }) => {
   const [expanded, setExpanded] = useState(false)
   return (
     <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
@@ -53,4 +53,4 @@ const ThreadGroup = ({ classes, name }) => {
   )
 }
 
-export default withStyles(styles)(ThreadGroup)
+export default withStyles(styles)(Cluster)

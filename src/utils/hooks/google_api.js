@@ -19,7 +19,7 @@ const useGoogleAPI = () => {
     if (isSignedIn) {
       gapi.client.people.people.get({
         resourceName: 'people/me',
-        personFields: 'names,locales,photos',
+        personFields: 'names,locales,photos,emailAddresses',
       })
         .then(
           response => updateUserProfile(response.result),
@@ -33,9 +33,17 @@ const useGoogleAPI = () => {
     // OAuth 2.0 client ID and scopes (space delimited string) to request access.
     gapi.client.init({
       apiKey: 'AIzaSyAvRqMi5pnaGVCV14BlEfKGs9xePuhtZk0',
-      discoveryDocs: ['https://people.googleapis.com/$discovery/rest?version=v1'],
+      discoveryDocs: [
+        'https://people.googleapis.com/$discovery/rest?version=v1',
+        'https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest',
+      ],
       clientId: '283173290792-09mip7ds9kjfo77qs1p4c3ea07pk2mot.apps.googleusercontent.com',
-      scope: 'profile',
+      scope: [
+        'profile',
+        'https://www.googleapis.com/auth/gmail.readonly',
+        'https://www.googleapis.com/auth/gmail.compose',
+        'https://www.googleapis.com/auth/gmail.send',
+      ].join(' '),
     }).then(() => {
       // Listen for sign-in state changes.
       gapi.auth2.getAuthInstance().isSignedIn.listen(initUser)
@@ -44,7 +52,9 @@ const useGoogleAPI = () => {
       initUser(gapi.auth2.getAuthInstance().isSignedIn.get())
     })
   }), [])
-  return { signIn, signOut, initClient }
+  return {
+    apiClient: gapi.client, signIn, signOut, initClient,
+  }
 }
 
 export default useGoogleAPI

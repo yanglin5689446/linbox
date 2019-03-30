@@ -1,10 +1,13 @@
 
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import {
   withStyles,
 } from '@material-ui/core'
 
 import TimeSlice from 'components/TimeSlice'
+
+import MailsContext from 'context/mails'
+import useGmailAPI from 'utils/hooks/gmail_api'
 
 const styles = () => ({
   container: {
@@ -15,53 +18,26 @@ const styles = () => ({
   },
 })
 
-// @todo: fake data
-const mails = {
-  today: {
-    GitHub: {
-      type: 'groups',
-      threads: [
-        {
-          id: 'foo',
-          threadId: 'bar',
-          payload: {
-            parts: {
-              body: {
-                data: 'bG9sIGJ5ZSBpbmJveAo=',
-              },
-            },
-          },
-        },
-      ],
-    },
-    'Foo Bar': {
-      type: 'thread',
-      id: 'foo',
-      threadId: 'bar',
-      payload: {
-        parts: {
-          body: {
-            data: 'bG9sIGJ5ZSBpbmJveAo=',
-          },
-        },
-      },
-    },
-  },
-}
-
-const Inbox = ({ classes }) => (
-  <div className={classes.container}>
-    {
-        Object.entries(mails)
-          .map(([key, threadGroups]) => (
-            <TimeSlice
-              key={key}
-              name={key}
-              threadGroups={threadGroups}
-            />
-          ))
+const Inbox = ({ classes }) => {
+  const { mails } = useContext(MailsContext)
+  const { initLoadInbox } = useGmailAPI()
+  useEffect(initLoadInbox, [])
+  return (
+    <div className={classes.container}>
+      {
+        mails.inbox
+          ? Object.entries(mails.inbox.processed)
+            .map(([key, Clusters]) => (
+              <TimeSlice
+                key={key}
+                name={key}
+                Clusters={Clusters}
+              />
+            ))
+          : 'Loading...'
       }
-  </div>
-)
+    </div>
+  )
+}
 
 export default withStyles(styles)(Inbox)

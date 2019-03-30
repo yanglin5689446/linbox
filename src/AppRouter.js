@@ -7,6 +7,7 @@ import Layout from 'components/Layout'
 
 import Inbox from 'pages/Inbox'
 
+
 const Dummy = name => () => (<div>{name}</div>)
 
 const AppRouter = () => (
@@ -28,5 +29,6 @@ const AppRouter = () => (
     </Layout>
   </BrowserRouter>
 )
+
 
 export default AppRouter

@@ -4,7 +4,7 @@ import {
   withStyles,
   Typography,
 } from '@material-ui/core'
-import ThreadGroup from './ThreadGroup'
+import Cluster from './Cluster'
 import Thread from './Thread'
 
 const styles = () => ({
@@ -14,7 +14,7 @@ const styles = () => ({
   },
 })
 
-const TimeSlice = ({ classes, name, threadGroups }) => (
+const TimeSlice = ({ classes, name, Clusters }) => (
   <div>
     <Typography
       variant='subtitle1'
@@ -23,10 +23,10 @@ const TimeSlice = ({ classes, name, threadGroups }) => (
       {name}
     </Typography>
     {
-      Object.entries(threadGroups)
+      Object.entries(Clusters)
         .map(([key, object]) => (object.type === 'thread'
           ? <Thread key={key} name={key} {...object} />
-          : <ThreadGroup key={key} name={key} threads={object.threads} />))
+          : <Cluster key={key} name={key} threads={object.threads} />))
     }
   </div>
 )
