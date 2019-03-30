@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   withStyles,
   AppBar as MUIAppBar,
@@ -9,44 +9,60 @@ import {
   InputBase,
   Paper,
   Avatar,
+  Tooltip,
+  Button,
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import SearchIcon from '@material-ui/icons/Search'
 
-const AppBar = ({ classes, toggleSideBar }) => (
-  <MUIAppBar
-    position='sticky'
-    className={classes.appBar}
-  >
-    <Toolbar>
-      <IconButton
-        className={classes.menuButton}
-        color='inherit'
-        aria-label='Menu'
-        onClick={toggleSideBar}
-      >
-        <MenuIcon />
-      </IconButton>
-      <Typography variant='h6' color='inherit' className={classes.grow}>
-          Inbox
-      </Typography>
-      <Paper className={classes.searchField} elevation={1}>
-        <IconButton className={classes.searchButton} aria-label='Menu'>
-          <SearchIcon />
-        </IconButton>
-        <InputBase className={classes.input} placeholder='Search' />
-      </Paper>
-      <div className={classes.otherComponents}>
-        <Avatar
-          alt=''
-          src='https://thispersondoesnotexist.com/image'
-          className={classes.avatar}
-        />
-      </div>
-    </Toolbar>
-  </MUIAppBar>
-)
+import useGoogleAPI from 'utils/hooks/google_api'
+import UserContext from 'context/user'
 
+
+const AppBar = ({ classes, toggleSideBar }) => {
+  const { user } = useContext(UserContext)
+  const { signOut } = useGoogleAPI()
+  const { photos } = user
+  return (
+    <MUIAppBar
+      position='sticky'
+      className={classes.appBar}
+    >
+      <Toolbar>
+        <IconButton
+          className={classes.menuButton}
+          color='inherit'
+          aria-label='Menu'
+          onClick={toggleSideBar}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant='h6' color='inherit' className={classes.grow}>
+            Inbox
+        </Typography>
+        <Paper className={classes.searchField} elevation={1}>
+          <IconButton className={classes.searchButton} aria-label='Menu'>
+            <SearchIcon />
+          </IconButton>
+          <InputBase className={classes.input} placeholder='Search' />
+        </Paper>
+        <div className={classes.otherComponents}>
+          <Tooltip
+            title={<Button onClick={signOut} color='primary'>Sign Out</Button>}
+            interactive
+            classes={{ tooltip: classes.tooltip }}
+          >
+            <Avatar
+              alt=''
+              src={photos[0].url}
+              className={classes.avatar}
+            />
+          </Tooltip>
+        </div>
+      </Toolbar>
+    </MUIAppBar>
+  )
+}
 AppBar.height = 64
 
 const styles = theme => ({
@@ -89,7 +105,15 @@ const styles = theme => ({
     width: '3rem',
   },
   avatar: {
-
+    cursor: 'pointer',
+  },
+  logout: {
+    zIndex: 100,
+  },
+  tooltip: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
   },
 })
 

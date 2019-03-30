@@ -1,35 +1,19 @@
-import React from 'react'
-import { BrowserRouter, Switch } from 'react-router-dom'
-import { Route } from 'react-router'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import Layout from 'components/Layout'
-
-import Inbox from 'pages/Inbox'
+import React, { useEffect, useContext } from 'react'
 
 import withProvider from 'context'
+import UserContext from 'context/user'
+import AppRouter from './AppRouter'
+import Login from './pages/Login'
 
 import './App.css'
+import useGoogleAPI from './utils/hooks/google_api'
 
-const Dummy = name => () => (<div>{name}</div>)
+const App = () => {
+  const { initClient } = useGoogleAPI()
+  useEffect(initClient, [])
+  const { user } = useContext(UserContext)
 
-const App = () => (
-  <BrowserRouter>
-    <CssBaseline />
-    <Layout>
-      <Switch>
-        <Route exact path='/' component={Inbox} />
-        <Route path='/snoozed' component={Dummy('snoozed')} />
-        <Route path='/done' component={Dummy('done')} />
-        <Route path='/drafts' component={Dummy('drafts')} />
-        <Route path='/sent' component={Dummy('sent')} />
-        <Route path='/reminders' component={Dummy('reminders')} />
-        <Route path='/trash' component={Dummy('trash')} />
-        <Route path='/span' component={Dummy('span')} />
-        <Route path='/trips' component={Dummy('trips')} />
-        <Route path='/cluster/:id' component={Dummy('cluster/:id')} />
-      </Switch>
-    </Layout>
-  </BrowserRouter>
-)
+  return user ? <AppRouter /> : <Login />
+}
 
 export default withProvider(App)
