@@ -6,6 +6,8 @@ import Layout from 'components/Layout'
 
 import Inbox from 'pages/Inbox'
 
+import withProvider from 'context'
+
 import './App.css'
 
 const Dummy = (name) => () => (<div>{name}</div>)
@@ -34,4 +36,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withProvider(App)
