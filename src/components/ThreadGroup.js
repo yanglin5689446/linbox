@@ -9,13 +9,13 @@ import {
   Avatar,
 } from '@material-ui/core'
 
-const styles = theme => ({
+const styles = () => ({
   summary: {
     display: 'flex',
   },
-  sender:{
+  sender: {
     flexGrow: 2,
-    display: 'flex'
+    display: 'flex',
   },
   avatar: {
     height: 24,
@@ -27,19 +27,19 @@ const styles = theme => ({
     paddingRight: 16,
   },
   snippet: {
-    flexGrow: 15
-  }
+    flexGrow: 15,
+  },
 })
 
-const ThreadGroup = ({ classes, name, threads }) => {
+const ThreadGroup = ({ classes, name }) => {
   const [expanded, setExpanded] = useState(false)
   return (
     <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
       <ExpansionPanelSummary className={classes.summary}>
         <div className={classes.sender}>
           <Avatar
-            alt=""
-            src="https://thispersondoesnotexist.com/image"
+            alt=''
+            src='https://thispersondoesnotexist.com/image'
             className={classes.avatar}
           />
           <Typography className={classes.name}>{name}</Typography>
@@ -47,8 +47,7 @@ const ThreadGroup = ({ classes, name, threads }) => {
         <Typography className={classes.snippet}>I am an expansion panel</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Typography>
-        </Typography>
+        <Typography />
       </ExpansionPanelDetails>
     </ExpansionPanel>
   )

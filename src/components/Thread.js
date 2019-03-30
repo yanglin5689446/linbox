@@ -2,7 +2,7 @@
 import React from 'react'
 
 const Thread = () => (
-  <div></div>
+  <div />
 )
 
 export default Thread

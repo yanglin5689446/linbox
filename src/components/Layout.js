@@ -1,12 +1,12 @@
 
 import React, { useCallback, useState, useContext } from 'react'
 import { withStyles } from '@material-ui/core'
+import classNames from 'classnames'
+import DraftsContext from 'context/drafts'
 import AppBar from './AppBar'
 import SideBar from './SideBar'
 import NewMailButton from './NewMailButton'
 import DraftsContainer from './DraftsContainer'
-import classNames from 'classnames'
-import DraftsContext from 'context/drafts'
 
 
 const styles = theme => ({
@@ -36,11 +36,11 @@ const Layout = ({ children, classes }) => {
     <div>
       <AppBar toggleSideBar={toggleSideBar} />
       <SideBar open={sideBarOpen} />
-      <main className={classNames(classes.content, sideBarOpen || classes.contentShift )}>
+      <main className={classNames(classes.content, sideBarOpen || classes.contentShift)}>
         { children }
       </main>
       <NewMailButton />
-      <DraftsContainer drafts={drafts}/>
+      <DraftsContainer drafts={drafts} />
     </div>
   )
 }

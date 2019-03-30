@@ -20,7 +20,55 @@ import ReportIcon from '@material-ui/icons/Report'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
-import AppBar from './AppBar';
+import AppBar from './AppBar'
+
+const Tab = ({ text, icon }) => (
+  <ListItem button>
+    <ListItemIcon>
+      { icon }
+    </ListItemIcon>
+    <ListItemText primary={text} />
+  </ListItem>
+)
+
+const SideBar = ({ classes, open }) => (
+  <div>
+    <Drawer
+      className={classes.drawer}
+      variant='persistent'
+      anchor='left'
+      open={open}
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+    >
+      <List component='nav'>
+        <Tab icon={<InboxIcon />} text='Inbox' />
+        <Tab icon={<AccessTimeIcon />} text='Snoozed' />
+        <Tab icon={<CheckIcon />} text='Done' />
+
+        <Divider className={classes.divider} />
+
+        <Tab icon={<DraftsIcon />} text='Drafts' />
+        <Tab icon={<SendIcon />} text='Send' />
+        <Tab icon={<NotificationsIcon />} text='Reminder' />
+        <Tab icon={<DeleteIcon />} text='Trash' />
+        <Tab icon={<ReportIcon />} text='Spam' />
+        <Tab icon={<AccountBoxIcon />} text='Contacts' />
+
+        <Divider className={classes.divider} />
+
+        <Tab icon={<AddIcon />} text='Create...' />
+
+        <Divider className={classes.divider} />
+
+        <Tab icon={<SettingsIcon />} text='Settings' />
+      </List>
+    </Drawer>
+  </div>
+)
+
+SideBar.width = 240
 
 const styles = () => ({
   drawerPaper: {
@@ -33,58 +81,8 @@ const styles = () => ({
   },
   divider: {
     margin: '10px 5px 5px 10px',
-  }
+  },
 })
-
-const Tab = ({ text, icon }) => (
-  <ListItem button>
-    <ListItemIcon>
-      { icon }
-    </ListItemIcon>
-    <ListItemText primary={text} />
-  </ListItem>
-)
-
-const SideBar = ({ classes, open }) => {
-  return (
-    <div>
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <List component="nav">
-          <Tab icon={<InboxIcon />} text='Inbox' />
-          <Tab icon={<AccessTimeIcon />} text='Snoozed' />
-          <Tab icon={<CheckIcon />} text='Done' />
-
-          <Divider className={classes.divider} />
-
-          <Tab icon={<DraftsIcon />} text='Drafts' />
-          <Tab icon={<SendIcon />} text='Send' />
-          <Tab icon={<NotificationsIcon />} text='Reminder' />
-          <Tab icon={<DeleteIcon />} text='Trash' />
-          <Tab icon={<ReportIcon />} text='Spam' />
-          <Tab icon={<AccountBoxIcon />} text='Contacts' />
-
-          <Divider className={classes.divider} />
-
-          <Tab icon={<AddIcon />} text='Create...' />
-
-          <Divider className={classes.divider} />
-
-          <Tab icon={<SettingsIcon />} text='Settings' />
-        </List>
-      </Drawer>
-    </div>
-  )
-}
-
-SideBar.width = 240
 
 
 export default withStyles(styles)(SideBar)

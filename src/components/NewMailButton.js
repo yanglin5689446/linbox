@@ -5,12 +5,12 @@ import AddIcon from '@material-ui/icons/Add'
 
 import DraftsContext from 'context/drafts'
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     position: 'fixed',
     right: 24,
     bottom: 24,
-  }
+  },
 })
 
 const NewMailButton = ({ classes }) => {
@@ -18,8 +18,8 @@ const NewMailButton = ({ classes }) => {
   const createNewDraftEdit = useCallback(() => newDraftEdit(null), [])
 
   return (
-    <div className={classes.root} >
-      <Fab color="secondary" onClick={createNewDraftEdit}>
+    <div className={classes.root}>
+      <Fab color='secondary' onClick={createNewDraftEdit}>
         <AddIcon />
       </Fab>
     </div>

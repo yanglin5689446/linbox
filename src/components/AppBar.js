@@ -13,6 +13,42 @@ import {
 import MenuIcon from '@material-ui/icons/Menu'
 import SearchIcon from '@material-ui/icons/Search'
 
+const AppBar = ({ classes, toggleSideBar }) => (
+  <MUIAppBar
+    position='sticky'
+    className={classes.appBar}
+  >
+    <Toolbar>
+      <IconButton
+        className={classes.menuButton}
+        color='inherit'
+        aria-label='Menu'
+        onClick={toggleSideBar}
+      >
+        <MenuIcon />
+      </IconButton>
+      <Typography variant='h6' color='inherit' className={classes.grow}>
+          Inbox
+      </Typography>
+      <Paper className={classes.searchField} elevation={1}>
+        <IconButton className={classes.searchButton} aria-label='Menu'>
+          <SearchIcon />
+        </IconButton>
+        <InputBase className={classes.input} placeholder='Search' />
+      </Paper>
+      <div className={classes.otherComponents}>
+        <Avatar
+          alt=''
+          src='https://thispersondoesnotexist.com/image'
+          className={classes.avatar}
+        />
+      </div>
+    </Toolbar>
+  </MUIAppBar>
+)
+
+AppBar.height = 64
+
 const styles = theme => ({
   appBar: {
     height: AppBar.height,
@@ -54,45 +90,7 @@ const styles = theme => ({
   },
   avatar: {
 
-  }
+  },
 })
-
-const AppBar = ({ classes, toggleSideBar }) => {
-  return (
-    <MUIAppBar
-      position="sticky"
-      className={classes.appBar}
-    >
-      <Toolbar>
-        <IconButton
-          className={classes.menuButton}
-          color="inherit"
-          aria-label="Menu"
-          onClick={toggleSideBar}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" color="inherit" className={classes.grow}>
-          Inbox
-        </Typography>
-        <Paper className={classes.searchField} elevation={1}>
-          <IconButton className={classes.searchButton} aria-label="Menu">
-            <SearchIcon />
-          </IconButton>
-          <InputBase className={classes.input} placeholder="Search" />
-        </Paper>
-        <div className={classes.otherComponents}>
-          <Avatar
-            alt=""
-            src="https://thispersondoesnotexist.com/image"
-            className={classes.avatar}
-          />
-        </div>
-      </Toolbar>
-    </MUIAppBar>
-  )
-}
-
-AppBar.height = 64
 
 export default withStyles(styles)(AppBar)

@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react'
+import React from 'react'
 import {
   withStyles,
 } from '@material-ui/core'
 import EditDraft from './EditDraft'
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     position: 'fixed',
     right: 100,
@@ -14,15 +14,12 @@ const styles = theme => ({
   },
 })
 
-const DraftsContainer = ({ classes, drafts }) => {
-  console.log(drafts)
-  return (
-    <div className={classes.root}>
-      {
-        drafts.map((draft, index) => <EditDraft key={index} {...draft} />)
-      }
-    </div>
-  )
-}
+const DraftsContainer = ({ classes, drafts }) => (
+  <div className={classes.root}>
+    {
+      drafts.map((draft, index) => <EditDraft key={index} {...draft} />) // eslint-disable-line
+    }
+  </div>
+)
 
 export default withStyles(styles)(DraftsContainer)
