@@ -26,12 +26,11 @@ const Inbox = ({ classes }) => {
     <div className={classes.container}>
       {
         mails.inbox
-          ? Object.entries(mails.inbox.processed)
-            .map(([key, Clusters]) => (
+          ? mails.inbox.processed
+            .map(clusters => (
               <TimeSlice
-                key={key}
-                name={key}
-                Clusters={Clusters}
+                key={clusters.label}
+                clusters={clusters}
               />
             ))
           : 'Loading...'

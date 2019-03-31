@@ -31,7 +31,7 @@ const styles = () => ({
   },
 })
 
-const Cluster = ({ classes, name }) => {
+const Cluster = ({ classes }) => {
   const [expanded, setExpanded] = useState(false)
   return (
     <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
@@ -42,7 +42,7 @@ const Cluster = ({ classes, name }) => {
             src='https://thispersondoesnotexist.com/image'
             className={classes.avatar}
           />
-          <Typography className={classes.name}>{name}</Typography>
+          <Typography className={classes.name} />
         </div>
         <Typography className={classes.snippet}>I am an expansion panel</Typography>
       </ExpansionPanelSummary>

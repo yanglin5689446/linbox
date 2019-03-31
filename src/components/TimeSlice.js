@@ -4,8 +4,7 @@ import {
   withStyles,
   Typography,
 } from '@material-ui/core'
-import Cluster from './Cluster'
-import Thread from './Thread'
+import ClusterOrThread from './ClusterOrThread'
 
 const styles = () => ({
   title: {
@@ -14,19 +13,18 @@ const styles = () => ({
   },
 })
 
-const TimeSlice = ({ classes, name, Clusters }) => (
+const TimeSlice = ({ classes, clusters }) => (
   <div>
     <Typography
       variant='subtitle1'
       className={classes.title}
     >
-      {name}
+      {clusters.label}
     </Typography>
     {
-      Object.entries(Clusters)
-        .map(([key, object]) => (object.type === 'thread'
-          ? <Thread key={key} name={key} {...object} />
-          : <Cluster key={key} name={key} threads={object.threads} />))
+      // @todo: change key to something other than index
+      // eslint-disable-next-line
+      clusters.threads.map((thread, index) => <ClusterOrThread key={index} {...thread} />)
     }
   </div>
 )
