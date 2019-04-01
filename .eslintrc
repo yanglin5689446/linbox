@@ -22,7 +22,8 @@
       "node": {
         "paths": ["src"]
       }
-    }
-  }
+    },
+    "exclude"
+  },
 }
 
