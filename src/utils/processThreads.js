@@ -3,18 +3,9 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 import compose from 'utils/compose'
-import debug from 'utils/debug'
+import { clusters, personal } from 'constants/cluster_types'
 
 dayjs.extend(relativeTime)
-
-const clusters = [
-  'CATEGORY_SOCIAL',
-  'CATEGORY_PROMOTION',
-  'CATEGORY_FORUMS',
-  'CATEGORY_UPDATES',
-  'CATEGORY_FINANTIAL',
-]
-const personal = 'CATEGORY_PERSONAL'
 
 // clusterize threads by same label
 // threads with same label are clusterized to one cluster,
@@ -91,7 +82,6 @@ const categorizeClusterizedByDate = (clusterized) => {
 }
 
 const processThreads = compose(
-  debug,
   categorizeClusterizedByDate,
   clusterize,
 )
