@@ -18,7 +18,16 @@ const useGmailAPI = () => {
         result.threads.map(({ id }) => gmailApi.users.threads.get({ userId, id })),
       ))
       .then((responses) => {
-        const threads = responses.map(({ result }) => result)
+        const threads = responses
+          .map(({ result }) => result)
+          .map(thread => ({
+            ...thread,
+            messages: thread.messages
+              .filter(message => message.labelIds.includes('INBOX'))
+              .slice()
+              .reverse(),
+          }))
+          .filter(thread => thread.messages.length)
         updateMails({ div: 'inbox', threads })
       })
   })

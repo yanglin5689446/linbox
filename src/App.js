@@ -2,10 +2,10 @@ import React, { useEffect, useContext } from 'react'
 
 import withProvider from 'context'
 import UserContext from 'context/user'
+import { hot } from 'react-hot-loader/root'
 import AppRouter from './AppRouter'
 import Login from './pages/Login'
 
-import { hot } from 'react-hot-loader/root'
 import useGoogleAPI from './utils/hooks/google_api'
 import './App.css'
 

@@ -10,7 +10,6 @@ import {
 } from '@material-ui/core'
 
 import { clusters } from 'constants/cluster_types'
-import debug from 'utils/debug'
 
 const styles = () => ({
   summary: {
@@ -48,7 +47,6 @@ const Cluster = ({ classes, labelIds, threads }) => {
       .map(thread => thread.messages[0])
       .map(message => message.payload.headers.find(e => e.name === 'From'))
       .map(header => header.value)
-      .map(debug)
     const uniqueHeaders = [...new Set(headers)]
     return uniqueHeaders
       .map((header) => {

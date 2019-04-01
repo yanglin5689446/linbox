@@ -9,6 +9,8 @@ import {
   Avatar,
   colors,
 } from '@material-ui/core'
+import Message from 'components/Message'
+import getSender from 'utils/getSender'
 
 const styles = () => ({
   summary: {
@@ -37,49 +39,57 @@ const styles = () => ({
   snippet: {
     color: colors.grey[700],
   },
+  subject: {
+    color: colors.grey[800],
+  },
+  mails: {
+    padding: 0,
+    display: 'block',
+  },
 })
 
 const Thread = ({ classes, messages }) => {
   const [expanded, setExpanded] = useState(false)
-  const getSenders = useCallback(() => {
-    const headers = messages
-      .map(message => message.payload.headers.find(e => e.name === 'From'))
-      .map(header => header.value)
-    const uniqueHeaders = [...new Set(headers)]
-    return uniqueHeaders
-      .map((header) => {
-        const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
-        const mail = header.match(mailRegex)[0]
-        const name = header.replace(mail, '').replace(' <>', '').replace(/"/g, '')
-        return { name, mail }
-      })
-      .reduce((result, { name, mail }) => ({ ...result, [name || mail]: mail }), [])
-  }, [messages])
   const getSubject = useCallback(message => message.payload
     .headers
     .find(e => e.name === 'Subject')
     .value, [])
+  const senders = messages.map(getSender)
+  const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
 
   return (
     <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
       <ExpansionPanelSummary className={classes.summary}>
-        <div className={classes.sender}>
-          <Avatar
-            alt=''
-            src='https://thispersondoesnotexist.com/image'
-            className={classes.avatar}
-          />
-          <Typography className={classes.name}>
-            { Object.entries(getSenders()).map(([name]) => name).join(', ') }
-          </Typography>
-        </div>
-        <Typography className={classes.brief}>
-          { getSubject(messages[0]) }
-          <span className={classes.snippet}>{ ` - ${messages[0].snippet}` }</span>
-        </Typography>
+        {
+          expanded
+            ? <span className={classes.subject}>{ getSubject(messages[0]) }</span>
+            : (
+              <React.Fragment>
+                <div className={classes.sender}>
+                  <Avatar
+                    alt=''
+                    src='https://thispersondoesnotexist.com/image'
+                    className={classes.avatar}
+                  />
+                  <Typography className={classes.name}>
+                    {
+                      [...new Set(senders.map(getSenderName))].join(', ')
+                    }
+                  </Typography>
+                </div>
+                <Typography className={classes.brief}>
+                  { getSubject(messages[0]) }
+                  <span className={classes.snippet}>{ ` - ${messages[0].snippet}` }</span>
+                </Typography>
+              </React.Fragment>
+            )
+        }
+
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Typography />
+      <ExpansionPanelDetails className={classes.mails}>
+        {
+          messages.map(message => <Message key={message.id} {...message} />)
+        }
       </ExpansionPanelDetails>
     </ExpansionPanel>
   )
