@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   withStyles,
   Card,
@@ -41,13 +41,26 @@ const styles = () => ({
 
 const Message = ({ classes, snippet, payload }) => {
   const [expanded, setExpanded] = useState(false)
-  const type = payload.body.size ? 'text' : 'html'
-  const raw = type === 'text'
-    ? payload.body.data
-    : payload.parts.find(e => e.mimeType === 'text/html').body.data
-  const decoded = new TextDecoder().decode(URLSafeBase64.decode(raw))
+  const parsePayloadType = useCallback((p) => {
+    switch (p.mimeType) {
+      case 'text/plain':
+        return { type: 'text', raw: p.body.data }
+      case 'text/html':
+        return { type: 'html', raw: p.body.data }
+      default: {
+        let found = p.parts.find(e => e.mimeType === 'text/html')
+        if (found) return { type: 'html', raw: found.body.data }
+        found = p.parts.find(e => e.mimeType === 'text/plain')
+        if (found) return { type: 'text', raw: found.body.data }
+      }
+        return {}
+    }
+  }, [])
+
   const sender = getSender({ payload })
-  const content = type === 'text'
+  const parsed = parsePayloadType(payload)
+  const decoded = new TextDecoder().decode(URLSafeBase64.decode(parsed.raw))
+  const content = parsed.type === 'text'
     ? <pre>{ decoded }</pre>
     : <div dangerouslySetInnerHTML={{ __html: decoded }} />
 

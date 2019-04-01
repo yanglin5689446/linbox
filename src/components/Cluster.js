@@ -7,11 +7,19 @@ import {
   ExpansionPanelDetails,
   Typography,
   Avatar,
+  colors,
 } from '@material-ui/core'
+import classNames from 'classnames'
 
+import Thread from 'components/Thread'
 import { clusters } from 'constants/cluster_types'
+import getSender from 'utils/getSender'
 
 const styles = () => ({
+  expanded: {
+    transition: 'background .2s',
+    background: colors.grey[300],
+  },
   summary: {
     display: 'flex',
   },
@@ -35,47 +43,79 @@ const styles = () => ({
     textOverflow: 'ellipsis',
     overflow: 'hidden',
   },
+  content: {
+    display: 'block',
+  },
+  nested: {
+    padding: 24,
+  },
+  nestedTitle: {
+    paddingLeft: 24,
+    margin: 5,
+  },
 })
 
 const Cluster = ({ classes, labelIds, threads }) => {
   const [expanded, setExpanded] = useState(false)
   const labelId = labelIds.find(e => clusters.includes(e))
-  const getSenders = useCallback(() => {
-    const headers = threads
-      .map(thread => thread.threads)
-      .flat()
-      .map(thread => thread.messages[0])
-      .map(message => message.payload.headers.find(e => e.name === 'From'))
-      .map(header => header.value)
-    const uniqueHeaders = [...new Set(headers)]
-    return uniqueHeaders
-      .map((header) => {
-        const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
-        const mail = header.match(mailRegex)[0]
-        const name = header.replace(mail, '').replace(' <>', '').replace(/"/g, '')
-        return { name, mail }
-      })
-      .reduce((result, { name, mail }) => ({ ...result, [name || mail]: mail }), [])
-  }, [threads])
+  const senders = threads
+    .map(thread => thread.threads)
+    .flat()
+    .map(thread => thread.messages[0])
+    .map(getSender)
+  const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
+
   return (
-    <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
+    <ExpansionPanel
+      expanded={expanded}
+      onChange={() => setExpanded(exp => !exp)}
+      className={classNames(expanded && classes.expanded)}
+    >
       <ExpansionPanelSummary className={classes.summary}>
-        <div className={classes.sender}>
-          <Avatar
-            alt=''
-            src='https://thispersondoesnotexist.com/image'
-            className={classes.avatar}
-          />
-          <Typography className={classes.name}>
-            { labelId }
-          </Typography>
-        </div>
-        <Typography className={classes.brief}>
-          { Object.entries(getSenders()).map(([name]) => name).join(', ') }
-        </Typography>
+        {
+          expanded
+            ? (
+              <Typography variant='h3'>
+                { labelId }
+              </Typography>
+            )
+            : (
+              <React.Fragment>
+                <div className={classes.sender}>
+                  <Avatar
+                    alt=''
+                    src='https://thispersondoesnotexist.com/image'
+                    className={classes.avatar}
+                  />
+                  <Typography className={classes.name}>
+                    { labelId }
+                  </Typography>
+                </div>
+                <Typography className={classes.brief}>
+                  { [...new Set(senders.map(getSenderName))].join(', ') }
+                </Typography>
+              </React.Fragment>
+            )
+        }
+
+
       </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <Typography />
+      <ExpansionPanelDetails className={classes.content}>
+        {
+          Object
+            .values(threads)
+            .map(nested => (
+              <div key={nested.label} className={classes.nested}>
+                <Typography
+                  variant='subtitle1'
+                  className={classes.nestedTitle}
+                >
+                  {nested.label}
+                </Typography>
+                { nested.threads.map(thread => <Thread key={thread.id} {...thread} />) }
+              </div>
+            ))
+        }
       </ExpansionPanelDetails>
     </ExpansionPanel>
   )
