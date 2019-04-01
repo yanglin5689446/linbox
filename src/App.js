@@ -5,8 +5,9 @@ import UserContext from 'context/user'
 import AppRouter from './AppRouter'
 import Login from './pages/Login'
 
-import './App.css'
+import { hot } from 'react-hot-loader/root'
 import useGoogleAPI from './utils/hooks/google_api'
+import './App.css'
 
 const App = () => {
   const { initClient } = useGoogleAPI()
@@ -16,4 +17,4 @@ const App = () => {
   return user ? <AppRouter /> : <Login />
 }
 
-export default withProvider(App)
+export default hot(withProvider(App))
