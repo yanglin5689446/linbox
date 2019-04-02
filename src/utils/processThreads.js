@@ -15,13 +15,6 @@ dayjs.extend(relativeTime)
 const clusterize = (threads) => {
   const result = []
   threads.forEach((thread) => {
-    // thread are order by time desc by default,
-    // but messages are in opposite,
-    // so reverse messages orders first
-    // notice that this do a side effect to raw data,
-    // but IMO this order is more intuitive
-    thread.messages.reverse()
-
     const found = clusters.find(e => thread.messages[0].labelIds.includes(e))
     if (found) {
       const index = result.findIndex(e => e.labelIds && e.labelIds.includes(found))
