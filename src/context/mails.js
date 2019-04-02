@@ -1,18 +1,16 @@
 
 import React, { useState, useCallback } from 'react'
-import processThreads from 'utils/processThreads'
 
 const MailsContext = React.createContext()
 
 export const MailsWrapper = Component => (props) => {
-  const [mails, setMails] = useState({})
+  const [mails, setMails] = useState({
+    raw: [],
+  })
 
-  const updateMails = useCallback(({ div, threads }) => setMails(prev => ({
+  const updateMails = useCallback(updates => setMails(prev => ({
     ...prev,
-    [div]: {
-      raw: threads,
-      processed: processThreads(threads),
-    },
+    ...updates,
   })), [])
 
   return (

@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useCallback } from 'react'
 import {
   withStyles,
 } from '@material-ui/core'
@@ -7,7 +7,9 @@ import {
 import TimeSlice from 'components/TimeSlice'
 
 import MailsContext from 'context/mails'
-import useGmailAPI from 'utils/hooks/gmail_api'
+import processThreads from 'utils/processThreads'
+import filterThreadsByLabel from 'utils/filterThreadsByLabel'
+import compose from 'utils/compose'
 
 const styles = () => ({
   container: {
@@ -20,19 +22,23 @@ const styles = () => ({
 
 const Inbox = ({ classes }) => {
   const { mails } = useContext(MailsContext)
-  const { initLoadInbox } = useGmailAPI()
-  useEffect(initLoadInbox, [])
+  const getInboxMails = useCallback(() => compose(
+    processThreads,
+    filterThreadsByLabel('INBOX'),
+  )(mails.raw), [mails.raw])
+
+  const inboxMails = getInboxMails()
+
   return (
     <div className={classes.container}>
       {
-        mails.inbox
-          ? mails.inbox.processed
-            .map(clusters => (
-              <TimeSlice
-                key={clusters.label}
-                clusters={clusters}
-              />
-            ))
+        inboxMails
+          ? inboxMails.map(clusters => (
+            <TimeSlice
+              key={clusters.label}
+              clusters={clusters}
+            />
+          ))
           : 'Loading...'
       }
     </div>
