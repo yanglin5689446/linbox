@@ -60,7 +60,7 @@ const Message = ({ classes, snippet, payload }) => {
   const sender = getSender({ payload })
   const parsed = parsePayloadType(payload)
   // @todo: support more mimetype
-  if(!parsed.raw)return null
+  if (!parsed.raw) return null
   const decoded = new TextDecoder().decode(URLSafeBase64.decode(parsed.raw))
   const content = parsed.type === 'text'
     ? <pre>{ decoded }</pre>

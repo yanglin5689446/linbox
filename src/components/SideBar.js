@@ -23,8 +23,10 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
 import AppBar from './AppBar'
 
-const Tab = withRouter(({ text, icon, to, history }) => (
-  <ListItem button onClick={() => to ? history.push(to) : null }>
+const Tab = withRouter(({
+  text, icon, to, history,
+}) => (
+  <ListItem button onClick={() => (to ? history.push(to) : null)}>
     <ListItemIcon>
       { icon }
     </ListItemIcon>
