@@ -47,16 +47,16 @@ const SideBar = ({ classes, open }) => (
     >
       <List component='nav'>
         <Tab icon={<InboxIcon />} to='/' text='Inbox' />
-        <Tab icon={<AccessTimeIcon />} text='Snoozed' />
+        <Tab icon={<AccessTimeIcon />} to='/snoozed' text='Snoozed' />
         <Tab icon={<CheckIcon />} to='/done' text='Done' />
 
         <Divider className={classes.divider} />
 
-        <Tab icon={<DraftsIcon />} text='Drafts' />
-        <Tab icon={<SendIcon />} text='Send' />
-        <Tab icon={<NotificationsIcon />} text='Reminder' />
-        <Tab icon={<DeleteIcon />} text='Trash' />
-        <Tab icon={<ReportIcon />} text='Spam' />
+        <Tab icon={<DraftsIcon />} to='/drafts' text='Drafts' />
+        <Tab icon={<SendIcon />} to='/Send' text='Send' />
+        <Tab icon={<NotificationsIcon />} to='/reminder' text='Reminder' />
+        <Tab icon={<DeleteIcon />} to='/trash' text='Trash' />
+        <Tab icon={<ReportIcon />} to='/spam' text='Spam' />
         <Tab icon={<AccountBoxIcon />} text='Contacts' />
 
         <Divider className={classes.divider} />
