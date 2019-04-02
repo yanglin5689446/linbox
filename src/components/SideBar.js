@@ -1,5 +1,6 @@
 
 import React from 'react'
+import { withRouter } from 'react-router'
 import {
   withStyles,
   Drawer,
@@ -22,14 +23,14 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
 import AppBar from './AppBar'
 
-const Tab = ({ text, icon }) => (
-  <ListItem button>
+const Tab = withRouter(({ text, icon, to, history }) => (
+  <ListItem button onClick={() => to ? history.push(to) : null }>
     <ListItemIcon>
       { icon }
     </ListItemIcon>
     <ListItemText primary={text} />
   </ListItem>
-)
+))
 
 const SideBar = ({ classes, open }) => (
   <div>
@@ -43,9 +44,9 @@ const SideBar = ({ classes, open }) => (
       }}
     >
       <List component='nav'>
-        <Tab icon={<InboxIcon />} text='Inbox' />
+        <Tab icon={<InboxIcon />} to='/' text='Inbox' />
         <Tab icon={<AccessTimeIcon />} text='Snoozed' />
-        <Tab icon={<CheckIcon />} text='Done' />
+        <Tab icon={<CheckIcon />} to='/done' text='Done' />
 
         <Divider className={classes.divider} />
 

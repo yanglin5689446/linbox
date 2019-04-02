@@ -13,7 +13,7 @@ const useGmailAPI = () => {
 
   const loadMails = useCallback(() => {
     const userId = user.emailAddresses[0].value
-    gmailApi.users.threads.list({ userId, includeSpamTrash: true })
+    gmailApi.users.threads.list({ userId })
       .then(({ result }) => Promise.all(
         result.threads.map(({ id }) => gmailApi.users.threads.get({ userId, id })),
       ))

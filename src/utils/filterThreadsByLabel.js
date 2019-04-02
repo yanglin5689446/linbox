@@ -1,8 +1,8 @@
 
-export default label => threads => threads.map(thread => ({
+export default filter => threads => threads.map(thread => ({
   ...thread,
   messages: thread.messages
-    .filter(message => message.labelIds.includes(label))
+    .filter(message => filter(message.labelIds))
     .slice()
     .reverse(),
 }))

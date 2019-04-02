@@ -6,6 +6,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import Layout from 'components/Layout'
 
 import Inbox from 'pages/Inbox'
+import Done from 'pages/Done'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
 const Dummy = name => () => (<div>{name}</div>)
@@ -20,7 +21,7 @@ const AppRouter = () => {
         <Switch>
           <Route exact path='/' component={Inbox} />
           <Route path='/snoozed' component={Dummy('snoozed')} />
-          <Route path='/done' component={Dummy('done')} />
+          <Route path='/done' component={Done} />
           <Route path='/drafts' component={Dummy('drafts')} />
           <Route path='/sent' component={Dummy('sent')} />
           <Route path='/reminders' component={Dummy('reminders')} />
