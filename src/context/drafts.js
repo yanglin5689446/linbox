@@ -6,17 +6,26 @@ const DraftsContext = React.createContext()
 const actions = {
   newDraftEdit: 'NEW_DRAFT_EDIT',
   closeDraftEdit: 'CLOSE_DRAFT_EDIT',
+  updateDraftEdit: 'UPDATE_DRAFT_EDIT',
 }
 
 const reducer = (state, action) => {
+  const { payload } = action
   switch (action.type) {
     case 'NEW_DRAFT_EDIT':
-      return [...state, action.payload]
-    case 'CLOSE_DRAFT_EDIT':
-      return [
-        ...state.slice(0, action.payload),
-        ...state.slice(action.payload + 1, state.length),
-      ]
+      return { ...state, [payload.id]: payload }
+    case 'CLOSE_DRAFT_EDIT': {
+      const { [payload]: discard, ...newState } = state
+      return newState
+    }
+    case 'UPDATE_DRAFT_EDIT':
+      return {
+        ...state,
+        [payload.id]: {
+          ...state[payload.id],
+          ...payload,
+        },
+      }
     default:
       return state
   }
@@ -32,9 +41,16 @@ export const DraftsWrapper = Component => (props) => {
     type: actions.closeDraftEdit,
     payload,
   }), [])
+  const updateDraftEdit = useCallback(payload => dispatch({
+    type: actions.updateDraftEdit,
+    payload,
+  }), [])
 
   return (
-    <DraftsContext.Provider value={{ drafts, newDraftEdit, closeDraftEdit }}>
+    <DraftsContext.Provider value={{
+      drafts, newDraftEdit, closeDraftEdit, updateDraftEdit,
+    }}
+    >
       <Component {...props} />
     </DraftsContext.Provider>
   )
