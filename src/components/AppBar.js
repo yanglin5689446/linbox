@@ -38,7 +38,7 @@ const AppBar = ({ classes, toggleSideBar }) => {
           <MenuIcon />
         </IconButton>
         <Typography variant='h6' color='inherit' className={classes.grow}>
-            Inbox
+            Linbox
         </Typography>
         <Paper className={classes.searchField} elevation={1}>
           <IconButton className={classes.searchButton} aria-label='Menu'>

@@ -20,19 +20,20 @@ const styles = () => ({
   },
 })
 
-const Inbox = ({ classes }) => {
+const Done = ({ classes }) => {
   const { mails } = useContext(MailsContext)
-  const getInboxMails = useCallback(() => compose(
+  const getDoneMails = useCallback(() => compose(
     processThreads,
-    filterThreadsByLabel(labels => labels.includes('INBOX')),
+    filterThreadsByLabel(labels => !labels.some(e => ['INBOX', 'TRASH', 'SPAM'].includes(e))),
   )(mails.raw), [mails.raw])
-  const inboxMails = getInboxMails()
+
+  const doneMails = getDoneMails()
 
   return (
     <div className={classes.container}>
       {
-        inboxMails
-          ? inboxMails.map(clusters => (
+        doneMails
+          ? doneMails.map(clusters => (
             <TimeSlice
               key={clusters.label}
               clusters={clusters}
@@ -44,4 +45,4 @@ const Inbox = ({ classes }) => {
   )
 }
 
-export default withStyles(styles)(Inbox)
+export default withStyles(styles)(Done)
