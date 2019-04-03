@@ -1,9 +1,9 @@
 
-import React, { useContext, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import { withStyles, Fab } from '@material-ui/core'
 import AddIcon from '@material-ui/icons/Add'
 
-import DraftsContext from 'context/drafts'
+import useGmailAPI from 'utils/hooks/gmail_api'
 
 const styles = () => ({
   root: {
@@ -14,8 +14,13 @@ const styles = () => ({
 })
 
 const NewMailButton = ({ classes }) => {
-  const { newDraftEdit } = useContext(DraftsContext)
-  const createNewDraftEdit = useCallback(() => newDraftEdit(null), [])
+  const { createDraft } = useGmailAPI()
+
+  const createNewDraftEdit = useCallback(() => createDraft({
+    subject: '',
+    content: '',
+    receipients: '',
+  }), [])
 
   return (
     <div className={classes.root}>

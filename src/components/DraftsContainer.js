@@ -17,7 +17,7 @@ const styles = () => ({
 const DraftsContainer = ({ classes, drafts }) => (
   <div className={classes.root}>
     {
-      drafts.map((draft, index) => <EditDraft key={index} {...draft} />) // eslint-disable-line
+      Object.entries(drafts).map(([id, draft]) => <EditDraft key={id} {...draft} />)
     }
   </div>
 )
