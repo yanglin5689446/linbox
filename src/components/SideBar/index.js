@@ -1,14 +1,11 @@
 
 import React from 'react'
-import { withRouter } from 'react-router'
 import {
   withStyles,
   Drawer,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Divider,
+  colors,
 } from '@material-ui/core'
 import InboxIcon from '@material-ui/icons/Inbox'
 import DraftsIcon from '@material-ui/icons/Drafts'
@@ -23,18 +20,8 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
 import { useTranslation } from 'react-i18next'
 
-import AppBar from './AppBar'
-
-const Tab = withRouter(({
-  text, icon, to, history,
-}) => (
-  <ListItem button onClick={() => (to ? history.push(to) : null)}>
-    <ListItemIcon>
-      { icon }
-    </ListItemIcon>
-    <ListItemText primary={text} />
-  </ListItem>
-))
+import AppBar from 'components/AppBar'
+import Tab from './Tab'
 
 const SideBar = ({ classes, open }) => {
   const { t } = useTranslation(['sidebar'])
@@ -50,9 +37,9 @@ const SideBar = ({ classes, open }) => {
         }}
       >
         <List component='nav'>
-          <Tab icon={<InboxIcon />} to='/' text={t('INBOX')} />
-          <Tab icon={<AccessTimeIcon />} to='/snoozed' text={t('SNOOZED')} />
-          <Tab icon={<CheckIcon />} to='/done' text={t('DONE')} />
+          <Tab icon={<InboxIcon className={classes.inbox} />} to='/' text={t('INBOX')} />
+          <Tab icon={<AccessTimeIcon className={classes.snoozed} />} to='/snoozed' text={t('SNOOZED')} />
+          <Tab icon={<CheckIcon className={classes.done} />} to='/done' text={t('DONE')} />
 
           <Divider className={classes.divider} />
 
@@ -60,7 +47,7 @@ const SideBar = ({ classes, open }) => {
           <Tab icon={<SendIcon />} to='/Send' text={t('SEND')} />
           <Tab icon={<NotificationsIcon />} to='/reminder' text={t('REMINDER')} />
           <Tab icon={<DeleteIcon />} to='/trash' text={t('TRASH')} />
-          <Tab icon={<ReportIcon />} to='/spam' text={t('SAPM')} />
+          <Tab icon={<ReportIcon />} to='/spam' text={t('SPAM')} />
           <Tab icon={<AccountBoxIcon />} text='Contacts' />
 
           <Divider className={classes.divider} />
@@ -86,6 +73,15 @@ const styles = () => ({
     background: 'transparent',
     border: 'none',
     zIndex: 10,
+  },
+  inbox: {
+    color: colors.blue[500],
+  },
+  snoozed: {
+    color: colors.orange[800],
+  },
+  done: {
+    color: colors.green[600],
   },
   divider: {
     margin: '10px 5px 5px 10px',
