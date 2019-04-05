@@ -21,6 +21,8 @@ import ReportIcon from '@material-ui/icons/Report'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import SettingsIcon from '@material-ui/icons/Settings'
 import AddIcon from '@material-ui/icons/Add'
+import { useTranslation } from 'react-i18next'
+
 import AppBar from './AppBar'
 
 const Tab = withRouter(({
@@ -34,42 +36,45 @@ const Tab = withRouter(({
   </ListItem>
 ))
 
-const SideBar = ({ classes, open }) => (
-  <div>
-    <Drawer
-      className={classes.drawer}
-      variant='persistent'
-      anchor='left'
-      open={open}
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <List component='nav'>
-        <Tab icon={<InboxIcon />} to='/' text='Inbox' />
-        <Tab icon={<AccessTimeIcon />} to='/snoozed' text='Snoozed' />
-        <Tab icon={<CheckIcon />} to='/done' text='Done' />
+const SideBar = ({ classes, open }) => {
+  const { t } = useTranslation(['sidebar'])
+  return (
+    <div>
+      <Drawer
+        className={classes.drawer}
+        variant='persistent'
+        anchor='left'
+        open={open}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <List component='nav'>
+          <Tab icon={<InboxIcon />} to='/' text={t('INBOX')} />
+          <Tab icon={<AccessTimeIcon />} to='/snoozed' text={t('SNOOZED')} />
+          <Tab icon={<CheckIcon />} to='/done' text={t('DONE')} />
 
-        <Divider className={classes.divider} />
+          <Divider className={classes.divider} />
 
-        <Tab icon={<DraftsIcon />} to='/drafts' text='Drafts' />
-        <Tab icon={<SendIcon />} to='/Send' text='Send' />
-        <Tab icon={<NotificationsIcon />} to='/reminder' text='Reminder' />
-        <Tab icon={<DeleteIcon />} to='/trash' text='Trash' />
-        <Tab icon={<ReportIcon />} to='/spam' text='Spam' />
-        <Tab icon={<AccountBoxIcon />} text='Contacts' />
+          <Tab icon={<DraftsIcon />} to='/drafts' text={t('DRAFTS')} />
+          <Tab icon={<SendIcon />} to='/Send' text={t('SEND')} />
+          <Tab icon={<NotificationsIcon />} to='/reminder' text={t('REMINDER')} />
+          <Tab icon={<DeleteIcon />} to='/trash' text={t('TRASH')} />
+          <Tab icon={<ReportIcon />} to='/spam' text={t('SAPM')} />
+          <Tab icon={<AccountBoxIcon />} text='Contacts' />
 
-        <Divider className={classes.divider} />
+          <Divider className={classes.divider} />
 
-        <Tab icon={<AddIcon />} text='Create...' />
+          <Tab icon={<AddIcon />} text='Create...' />
 
-        <Divider className={classes.divider} />
+          <Divider className={classes.divider} />
 
-        <Tab icon={<SettingsIcon />} text='Settings' />
-      </List>
-    </Drawer>
-  </div>
-)
+          <Tab icon={<SettingsIcon />} text='Settings' />
+        </List>
+      </Drawer>
+    </div>
+  )
+}
 
 SideBar.width = 240
 

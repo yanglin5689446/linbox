@@ -10,9 +10,10 @@ import {
   colors,
 } from '@material-ui/core'
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 
 import Thread from 'components/Thread'
-import { clusters } from 'constants/cluster_types'
+import { labels } from 'constants/system_labels'
 import getSender from 'utils/getSender'
 
 const styles = () => ({
@@ -57,7 +58,8 @@ const styles = () => ({
 
 const Cluster = ({ classes, labelIds, threads }) => {
   const [expanded, setExpanded] = useState(false)
-  const labelId = labelIds.find(e => clusters.includes(e))
+  const labelId = labelIds.find(e => labels.includes(e))
+  const { t } = useTranslation(['labels', 'date'])
   const senders = threads
     .map(thread => thread.threads)
     .flat()
@@ -76,7 +78,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
           expanded
             ? (
               <Typography variant='h3'>
-                { labelId }
+                { t(labelId) }
               </Typography>
             )
             : (
@@ -88,7 +90,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
                     className={classes.avatar}
                   />
                   <Typography className={classes.name}>
-                    { labelId }
+                    { t(labelId) }
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
@@ -110,7 +112,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
                   variant='subtitle1'
                   className={classes.nestedTitle}
                 >
-                  {nested.label}
+                  { t(`date:${nested.label}`, { date: nested.date }) }
                 </Typography>
                 { nested.threads.map(thread => <Thread key={thread.id} {...thread} />) }
               </div>
