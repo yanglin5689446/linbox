@@ -1,11 +1,31 @@
 
 import { useContext, useCallback } from 'react'
 import UserContext from 'context/user'
+import ContactsContext from 'context/contacts'
+
+import fetchJsonp from 'fetch-jsonp'
 
 const { gapi } = window
 
 const useGoogleAPI = () => {
   const { updateUserProfile } = useContext(UserContext)
+  const { updateContacts } = useContext(ContactsContext)
+
+  const getContacts = useCallback(() => {
+    const token = gapi.auth.getToken().access_token
+    const endpoint = `https://www.googleapis.com/m8/feeds/contacts/default/thin?alt=json&access_token=${token}&max-results=500&v=3.0`
+    fetchJsonp(endpoint)
+      .then(response => response.json())
+      .then(json => updateContacts(json.feed.entry
+        .filter(contact => contact.gd$email)
+        .map(contact => ({
+          id: contact.id.$t.split('/').pop(),
+          email: contact.gd$email[0].address,
+          name: contact.gd$name,
+          title: contact.title.$t,
+          photo: contact.link,
+        }))))
+  }, [])
 
   const signIn = useCallback(() => gapi.auth2.getAuthInstance().signIn(), [])
   const signOut = useCallback(() => {
@@ -43,6 +63,7 @@ const useGoogleAPI = () => {
         'https://www.googleapis.com/auth/gmail.readonly',
         'https://www.googleapis.com/auth/gmail.compose',
         'https://www.googleapis.com/auth/gmail.send',
+        'https://www.google.com/m8/feeds',
       ].join(' '),
     }).then(() => {
       // Listen for sign-in state changes.
@@ -50,10 +71,12 @@ const useGoogleAPI = () => {
 
       // Handle the initial sign-in state.
       initUser(gapi.auth2.getAuthInstance().isSignedIn.get())
+      getContacts()
     })
   }), [])
+
   return {
-    apiClient: gapi.client, signIn, signOut, initClient,
+    apiClient: gapi.client, signIn, signOut, initClient, getContacts,
   }
 }
 

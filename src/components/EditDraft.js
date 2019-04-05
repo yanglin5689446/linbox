@@ -11,12 +11,16 @@ import {
   InputBase,
   Button,
   colors,
+  Typography,
+  Select,
+  MenuItem,
 } from '@material-ui/core'
 import DraftsIcon from '@material-ui/icons/Drafts'
 import ClearIcon from '@material-ui/icons/Clear'
 import MinimizeIcon from '@material-ui/icons/Minimize'
 import classNames from 'classnames'
 
+import ContactsContext from 'context/contacts'
 import DraftsContext from 'context/drafts'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
@@ -29,6 +33,7 @@ const styles = () => ({
     width: 480,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+    boxShadow: '0 8px 16px rgba(0,0,0,0.45)',
   },
   header: {
     background: colors.grey[800],
@@ -66,15 +71,12 @@ const EditDraft = ({
   classes, sender, id, subject, receipients, content,
 }) => {
   const { closeDraftEdit } = useContext(DraftsContext)
+  const { contacts } = useContext(ContactsContext)
   const { updateDraft, sendDraft, deleteDraft } = useGmailAPI()
-  const update = field => e => updateDraft({
-    id,
-    sender,
-    subject,
-    receipients,
-    content,
-    [field]: e.target.value,
-  })
+  const draft = {
+    id, receipients, sender, subject, content,
+  }
+  const update = field => e => updateDraft({ ...draft, [field]: e.target.value })
   return (
     <div className={classes.root}>
       <Card className={classes.card}>
@@ -99,25 +101,44 @@ const EditDraft = ({
           )}
         />
         <CardContent className={classes.content}>
-          <InputBase
-            placeholder='Receipient'
-            className={classes.input}
-            inputProps={{
-              'aria-label': 'Receipient',
-            }}
-            value={receipients}
-            onChange={update('receipients')}
-          />
+          <Select
+            multiple
+            autoWidth
+            value={receipients.slice().split(',')}
+            onChange={e => updateDraft({ ...draft, receipients: `${receipients},${e.target.value}` })}
+            input={(
+              <InputBase
+                placeholder='Receipient'
+                className={classes.input}
+                inputProps={{
+                  'aria-label': 'Receipient',
+                }}
+              />
+)}
+          >
+            {
+              Object.values(contacts)
+                .map(contact => (
+                  <MenuItem key={contact.id} value={contact.email}>
+                    { contact.email }
+                  </MenuItem>
+                ))
+            }
+          </Select>
+
           <Divider />
-          <InputBase
-            placeholder='Sender'
-            className={classes.input}
-            inputProps={{
-              'aria-label': 'Sender',
-            }}
-            value={sender}
-            onChange={update('sender')}
-          />
+          <div className={classes.input}>
+            <Typography variant='caption'>Sender: </Typography>
+            <InputBase
+              placeholder='Sender'
+
+              inputProps={{
+                'aria-label': 'Sender',
+              }}
+              value={sender}
+              onChange={update('sender')}
+            />
+          </div>
           <Divider />
           <InputBase
             placeholder='Subject'
@@ -140,6 +161,7 @@ const EditDraft = ({
             value={content}
             onChange={update('content')}
           />
+
         </CardContent>
         <CardActions disableActionSpacing>
           <Button variant='contained' color='primary' onClick={() => sendDraft(id)}>
