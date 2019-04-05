@@ -5,6 +5,7 @@ import UserContext from 'context/user'
 import { hot } from 'react-hot-loader/root'
 import AppRouter from './AppRouter'
 import Login from './pages/Login'
+import './i18n'
 
 import useGoogleAPI from './utils/hooks/google_api'
 import './App.css'

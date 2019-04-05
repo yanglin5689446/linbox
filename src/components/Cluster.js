@@ -10,54 +10,64 @@ import {
   colors,
 } from '@material-ui/core'
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 
 import Thread from 'components/Thread'
-import { clusters } from 'constants/cluster_types'
+import { labels } from 'constants/system_labels'
 import getSender from 'utils/getSender'
 
 const styles = () => ({
   expanded: {
-    transition: 'background .2s',
+    transition: 'all .1s',
     background: colors.grey[300],
+    width: 'calc(100% + 48px)',
+    marginLeft: -24,
   },
   summary: {
     display: 'flex',
   },
   sender: {
-    width: 220,
+    flexGrow: 3,
     display: 'flex',
   },
   avatar: {
     height: 24,
     width: 24,
-    display: 'inline-block',
   },
   name: {
+    width: 150,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     paddingLeft: 16,
     paddingRight: 16,
   },
   brief: {
-    width: 500,
-    flexGrow: 15,
+    flexGrow: 7,
+    width: 'calc(70vw - 220px - 24px * 2)',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
   },
   content: {
     display: 'block',
+    border: `24px solid ${colors.grey[300]}`,
+    padding: 0,
   },
   nested: {
-    padding: 24,
   },
   nestedTitle: {
     paddingLeft: 24,
     margin: 5,
   },
+  label: {
+    padding: '0 24px',
+  },
 })
 
 const Cluster = ({ classes, labelIds, threads }) => {
   const [expanded, setExpanded] = useState(false)
-  const labelId = labelIds.find(e => clusters.includes(e))
+  const labelId = labelIds.find(e => labels.includes(e))
+  const { t } = useTranslation(['labels', 'date'])
   const senders = threads
     .map(thread => thread.threads)
     .flat()
@@ -75,8 +85,8 @@ const Cluster = ({ classes, labelIds, threads }) => {
         {
           expanded
             ? (
-              <Typography variant='h3'>
-                { labelId }
+              <Typography variant='h5' classes={{ h5: classes.label }}>
+                { t(labelId) }
               </Typography>
             )
             : (
@@ -84,11 +94,12 @@ const Cluster = ({ classes, labelIds, threads }) => {
                 <div className={classes.sender}>
                   <Avatar
                     alt=''
-                    src='https://thispersondoesnotexist.com/image'
                     className={classes.avatar}
-                  />
+                  >
+                    { labelId[0] }
+                  </Avatar>
                   <Typography className={classes.name}>
-                    { labelId }
+                    { t(labelId) }
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
@@ -110,7 +121,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
                   variant='subtitle1'
                   className={classes.nestedTitle}
                 >
-                  {nested.label}
+                  { t(`date:${nested.label}`, { date: nested.date }) }
                 </Typography>
                 { nested.threads.map(thread => <Thread key={thread.id} {...thread} />) }
               </div>

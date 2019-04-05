@@ -25,7 +25,7 @@ const styles = () => ({
   avatar: {
     height: 32,
     width: 32,
-    margin: '4px 8px',
+    margin: '4px 12px',
   },
   body: {
     padding: 4,
@@ -35,7 +35,7 @@ const styles = () => ({
     textOverflow: 'ellipsis',
     overflow: 'hidden',
     fontSize: 14,
-    width: 1000,
+    width: 'calc(70vw - 32px - 12px * 2 - 20px)',
   },
 })
 
@@ -75,9 +75,10 @@ const Message = ({ classes, snippet, payload }) => {
       <CardContent className={classes.content}>
         <Avatar
           alt=''
-          src='https://thispersondoesnotexist.com/image'
           className={classes.avatar}
-        />
+        >
+          { sender.name[0] }
+        </Avatar>
         <div className={classes.body}>
           <strong>{ sender.name }</strong>
           <br />

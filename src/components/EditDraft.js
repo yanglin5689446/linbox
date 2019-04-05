@@ -19,6 +19,7 @@ import DraftsIcon from '@material-ui/icons/Drafts'
 import ClearIcon from '@material-ui/icons/Clear'
 import MinimizeIcon from '@material-ui/icons/Minimize'
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 
 import ContactsContext from 'context/contacts'
 import DraftsContext from 'context/drafts'
@@ -60,6 +61,7 @@ const styles = () => ({
   },
   input: {
     padding: '4px 12px',
+    display: 'block',
   },
   subject: {
     padding: '12px 12px',
@@ -70,6 +72,7 @@ const styles = () => ({
 const EditDraft = ({
   classes, sender, id, subject, receipients, content,
 }) => {
+  const { t } = useTranslation(['draft'])
   const { closeDraftEdit } = useContext(DraftsContext)
   const { contacts } = useContext(ContactsContext)
   const { updateDraft, sendDraft, deleteDraft } = useGmailAPI()
@@ -128,9 +131,13 @@ const EditDraft = ({
 
           <Divider />
           <div className={classes.input}>
-            <Typography variant='caption'>Sender: </Typography>
+            <Typography variant='caption'>
+              {t('SENDER')}
+:
+              {' '}
+            </Typography>
             <InputBase
-              placeholder='Sender'
+              placeholder={t('SENDER')}
 
               inputProps={{
                 'aria-label': 'Sender',
@@ -141,7 +148,7 @@ const EditDraft = ({
           </div>
           <Divider />
           <InputBase
-            placeholder='Subject'
+            placeholder={t('SUBJECT')}
             className={classes.subject}
             inputProps={{
               'aria-label': 'Subject',
@@ -151,7 +158,7 @@ const EditDraft = ({
           />
           <br />
           <InputBase
-            placeholder='Write something'
+            placeholder={t('CONTENT')}
             className={classes.input}
             multiline
             rows={10}
@@ -165,7 +172,7 @@ const EditDraft = ({
         </CardContent>
         <CardActions disableActionSpacing>
           <Button variant='contained' color='primary' onClick={() => sendDraft(id)}>
-            Send
+            { t('SEND') }
           </Button>
         </CardActions>
       </Card>

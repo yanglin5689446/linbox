@@ -14,12 +14,14 @@ import {
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
 import SearchIcon from '@material-ui/icons/Search'
+import { useTranslation } from 'react-i18next'
 
 import useGoogleAPI from 'utils/hooks/google_api'
 import UserContext from 'context/user'
 
 
 const AppBar = ({ classes, toggleSideBar }) => {
+  const { t } = useTranslation(['actions'])
   const { user } = useContext(UserContext)
   const { signOut } = useGoogleAPI()
   const { photos } = user
@@ -28,7 +30,7 @@ const AppBar = ({ classes, toggleSideBar }) => {
       position='sticky'
       className={classes.appBar}
     >
-      <Toolbar>
+      <Toolbar classes={{ root: classes.toolbar }}>
         <IconButton
           className={classes.menuButton}
           color='inherit'
@@ -38,17 +40,17 @@ const AppBar = ({ classes, toggleSideBar }) => {
           <MenuIcon />
         </IconButton>
         <Typography variant='h6' color='inherit' className={classes.grow}>
-            Linbox
+          Linbox
         </Typography>
         <Paper className={classes.searchField} elevation={1}>
-          <IconButton className={classes.searchButton} aria-label='Menu'>
+          <span className={classes.searchIcon} aria-label='Search'>
             <SearchIcon />
-          </IconButton>
-          <InputBase className={classes.input} placeholder='Search' />
+          </span>
+          <InputBase className={classes.input} placeholder={t('SEARCH')} />
         </Paper>
         <div className={classes.otherComponents}>
           <Tooltip
-            title={<Button onClick={signOut} color='primary'>Sign Out</Button>}
+            title={<Button onClick={signOut} color='primary'>{ t('SIGN_OUT') }</Button>}
             interactive
             classes={{ tooltip: classes.tooltip }}
           >
@@ -63,18 +65,26 @@ const AppBar = ({ classes, toggleSideBar }) => {
     </MUIAppBar>
   )
 }
-AppBar.height = 64
+AppBar.height = 56
 
 const styles = theme => ({
   appBar: {
     height: AppBar.height,
     zIndex: 1000,
   },
+  toolbar: {
+    height: AppBar.height,
+    minHeight: AppBar.height,
+  },
   grow: {
-    flexBasis: '300px',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+    width: '15vw',
   },
   otherComponents: {
-    flexGrow: 2,
+    width: '15vw',
+    minWidth: '80px',
     display: 'flex',
     justifyContent: 'flex-end',
   },
@@ -82,14 +92,20 @@ const styles = theme => ({
     flexGrow: 5,
     height: '2.5rem',
     lineHeight: '2.5rem',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    width: 24,
+    height: 24,
+    margin: '0px 20px',
+    color: theme.palette.grey[500],
   },
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
   },
-  searchButton: {
-    padding: '0px 20px 0px 20px',
-  },
+
   pinSwitch: {
     marginLeft: 10,
   },

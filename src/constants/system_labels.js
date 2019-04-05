@@ -1,5 +1,5 @@
 
-export const clusters = [
+export const labels = [
   'CATEGORY_SOCIAL',
   'CATEGORY_PROMOTION',
   'CATEGORY_FORUMS',

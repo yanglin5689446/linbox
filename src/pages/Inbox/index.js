@@ -13,7 +13,7 @@ import compose from 'utils/compose'
 
 const styles = () => ({
   container: {
-    width: '60vw',
+    width: '70vw',
     maxWidth: 1200,
     marginLeft: 'auto',
     marginRight: 'auto',
