@@ -1,5 +1,9 @@
 
 export default ({
+  actions: {
+    SEARCH: 'Search',
+    SIGN_OUT: 'Sign Out',
+  },
   sidebar: {
     INBOX: 'Inbox',
     SNOOZED: 'Snoozed',

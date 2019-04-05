@@ -1,5 +1,9 @@
 
 export default ({
+  actions: {
+    SEARCH: '搜尋',
+    SIGN_OUT: '登出',
+  },
   sidebar: {
     INBOX: '收件匣',
     SNOOZED: '已延後',
