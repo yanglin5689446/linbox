@@ -17,21 +17,24 @@ const styles = () => ({
     display: 'flex',
   },
   sender: {
-    width: 220,
+    flexGrow: 3,
     display: 'flex',
   },
   avatar: {
     height: 24,
     width: 24,
-    display: 'inline-block',
   },
   name: {
+    width: 150,
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
     paddingLeft: 16,
     paddingRight: 16,
   },
   brief: {
-    width: 500,
-    flexGrow: 15,
+    flexGrow: 7,
+    width: 'calc(70vw - 220px - 24px * 2)',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
@@ -68,9 +71,10 @@ const Thread = ({ classes, messages }) => {
                 <div className={classes.sender}>
                   <Avatar
                     alt=''
-                    src='https://thispersondoesnotexist.com/image'
                     className={classes.avatar}
-                  />
+                  >
+                    { getSenderName(senders[0])[0] }
+                  </Avatar>
                   <Typography className={classes.name}>
                     {
                       [...new Set(senders.map(getSenderName))].join(', ')

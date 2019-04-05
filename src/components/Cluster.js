@@ -18,41 +18,49 @@ import getSender from 'utils/getSender'
 
 const styles = () => ({
   expanded: {
-    transition: 'background .2s',
+    transition: 'all .1s',
     background: colors.grey[300],
+    width: 'calc(100% + 48px)',
+    marginLeft: -24,
   },
   summary: {
     display: 'flex',
   },
   sender: {
-    width: 220,
+    flexGrow: 3,
     display: 'flex',
   },
   avatar: {
     height: 24,
     width: 24,
-    display: 'inline-block',
   },
   name: {
+    width: 150,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     paddingLeft: 16,
     paddingRight: 16,
   },
   brief: {
-    width: 500,
-    flexGrow: 15,
+    flexGrow: 7,
+    width: 'calc(70vw - 220px - 24px * 2)',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
   },
   content: {
     display: 'block',
+    border: `24px solid ${colors.grey[300]}`,
+    padding: 0,
   },
   nested: {
-    padding: 24,
   },
   nestedTitle: {
     paddingLeft: 24,
     margin: 5,
+  },
+  label: {
+    padding: '0 24px',
   },
 })
 
@@ -77,7 +85,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
         {
           expanded
             ? (
-              <Typography variant='h3'>
+              <Typography variant='h5' classes={{ h5: classes.label }}>
                 { t(labelId) }
               </Typography>
             )
@@ -86,9 +94,10 @@ const Cluster = ({ classes, labelIds, threads }) => {
                 <div className={classes.sender}>
                   <Avatar
                     alt=''
-                    src='https://thispersondoesnotexist.com/image'
                     className={classes.avatar}
-                  />
+                  >
+                    { labelId[0] }
+                  </Avatar>
                   <Typography className={classes.name}>
                     { t(labelId) }
                   </Typography>
