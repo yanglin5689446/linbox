@@ -61,6 +61,7 @@ const styles = () => ({
   },
   input: {
     padding: '4px 12px',
+    display: 'block',
   },
   subject: {
     padding: '12px 12px',
