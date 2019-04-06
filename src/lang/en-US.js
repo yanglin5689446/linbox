@@ -18,8 +18,8 @@ export default ({
     TODAY: 'Today',
     YESTERDAY: 'Yesterday',
     THIS_MONTH: 'This Month',
-    MONTH: '{{date.month}} Month',
-    YEAR_N_MONTH: '{{date.year}}/{{date.month}}',
+    MONTH: '{{date.month, month}}',
+    YEAR_N_MONTH: '{{date.month, month}}, {{date.year}}',
     EARLIER: 'Earlier',
   },
   draft: {

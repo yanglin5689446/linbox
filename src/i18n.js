@@ -46,6 +46,25 @@ i18n
 
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
+      format(value, format) {
+        if (format === 'month') {
+          return [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
+          ][value]
+        }
+        return value
+      },
     },
 
     // special options for react-i18next
