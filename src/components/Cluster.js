@@ -26,8 +26,11 @@ const styles = () => ({
   summary: {
     display: 'flex',
   },
+  summaryContent: {
+    maxWidth: '100%',
+  },
   sender: {
-    flexGrow: 3,
+    flex: 2,
     display: 'flex',
   },
   avatar: {
@@ -42,8 +45,8 @@ const styles = () => ({
     paddingRight: 16,
   },
   brief: {
-    flexGrow: 7,
-    width: 'calc(70vw - 220px - 24px * 2)',
+    flex: 8,
+    minWidth: 0,
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
@@ -81,7 +84,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
       onChange={() => setExpanded(exp => !exp)}
       className={classNames(expanded && classes.expanded)}
     >
-      <ExpansionPanelSummary className={classes.summary}>
+      <ExpansionPanelSummary classes={{ root: classes.summary, content: classes.summaryContent }}>
         {
           expanded
             ? (
