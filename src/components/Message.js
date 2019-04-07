@@ -20,7 +20,7 @@ const styles = () => ({
   },
   content: {
     display: 'flex',
-    padding: 8,
+    padding: '8px !important',
   },
   avatar: {
     height: 32,
@@ -29,6 +29,10 @@ const styles = () => ({
   },
   body: {
     padding: 4,
+  },
+  draftBody: {
+    display: 'flex',
+    alignItems: 'center',
   },
   snippet: {
     whiteSpace: 'nowrap',
@@ -39,7 +43,9 @@ const styles = () => ({
   },
 })
 
-const Message = ({ classes, snippet, payload }) => {
+const Message = ({
+  classes, snippet, payload, draft,
+}) => {
   const [expanded, setExpanded] = useState(false)
   const parsePayloadType = useCallback((p) => {
     switch (p.mimeType) {
@@ -79,16 +85,14 @@ const Message = ({ classes, snippet, payload }) => {
         >
           { sender.name[0] }
         </Avatar>
-        <div className={classes.body}>
+        <div className={draft ? classes.draftBody : classes.body}>
           <strong>{ sender.name }</strong>
           <br />
           {
             expanded
               ? content
               : <div className={classes.snippet}>{ snippet }</div>
-
           }
-
         </div>
       </CardContent>
     </Card>

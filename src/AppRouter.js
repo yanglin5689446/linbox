@@ -7,6 +7,8 @@ import Layout from 'components/Layout'
 
 import Inbox from 'pages/Inbox'
 import Done from 'pages/Done'
+import Drafts from 'pages/Drafts'
+
 import useGmailAPI from 'utils/hooks/gmail_api'
 
 const Dummy = name => () => (<div>{name}</div>)
@@ -22,7 +24,7 @@ const AppRouter = () => {
           <Route exact path='/' component={Inbox} />
           <Route path='/snoozed' component={Dummy('snoozed')} />
           <Route path='/done' component={Done} />
-          <Route path='/drafts' component={Dummy('drafts')} />
+          <Route path='/drafts' component={Drafts} />
           <Route path='/sent' component={Dummy('sent')} />
           <Route path='/reminders' component={Dummy('reminders')} />
           <Route path='/trash' component={Dummy('trash')} />
