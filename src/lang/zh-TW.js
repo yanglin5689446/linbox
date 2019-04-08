@@ -12,6 +12,7 @@ export default ({
     SEND: '寄件備份',
     REMINDER: '提醒',
     TRASH: '垃圾桶',
+    CONTACTS: '聯絡人',
     SPAM: '垃圾郵件',
   },
   date: {
