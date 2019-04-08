@@ -9,39 +9,13 @@ import {
   Avatar,
   colors,
 } from '@material-ui/core'
-import Message from 'components/Message'
+import Message from 'components/Mail/Message'
 import getSender from 'utils/getSender'
 
-const styles = () => ({
-  summary: {
-    display: 'flex',
-  },
-  summaryContent: {
-    maxWidth: '100%',
-  },
-  sender: {
-    flex: 2,
-    display: 'flex',
-  },
-  avatar: {
-    height: 24,
-    width: 24,
-  },
-  name: {
-    width: 150,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  brief: {
-    flex: 8,
-    minWidth: 0,
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-  },
+import { threadSharedStyles } from './styles'
+
+const styles = theme => ({
+  ...threadSharedStyles(theme),
   snippet: {
     color: colors.grey[700],
   },

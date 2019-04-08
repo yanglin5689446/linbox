@@ -4,7 +4,7 @@ import {
   withStyles,
 } from '@material-ui/core'
 
-import Message from 'components/Message'
+import Message from 'components/Mail/Message'
 
 import DraftsContext from 'context/drafts'
 import useGmailAPI from 'utils/hooks/gmail_api'

@@ -4,7 +4,7 @@ import {
   withStyles,
 } from '@material-ui/core'
 
-import TimeSlice from 'components/TimeSlice'
+import TimeSlice from 'components/Mail/TimeSlice'
 
 import MailsContext from 'context/mails'
 import processThreads from 'utils/processThreads'

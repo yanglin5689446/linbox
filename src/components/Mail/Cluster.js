@@ -7,53 +7,21 @@ import {
   ExpansionPanelDetails,
   Typography,
   Avatar,
-  colors,
 } from '@material-ui/core'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 
-import Thread from 'components/Thread'
+import Thread from 'components/Mail/Thread'
 import { labels } from 'constants/system_labels'
 import getSender from 'utils/getSender'
 
-const styles = () => ({
-  expanded: {
-    transition: 'all .1s',
-    background: colors.grey[300],
-    width: 'calc(100% + 48px)',
-    marginLeft: -24,
-  },
-  summary: {
-    display: 'flex',
-  },
-  summaryContent: {
-    maxWidth: '100%',
-  },
-  sender: {
-    flex: 2,
-    display: 'flex',
-  },
-  avatar: {
-    height: 24,
-    width: 24,
-  },
-  name: {
-    width: 150,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  brief: {
-    flex: 8,
-    minWidth: 0,
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-  },
+import { threadSharedStyles } from './styles'
+
+const styles = theme => ({
+  ...threadSharedStyles(theme),
   content: {
     display: 'block',
-    border: `24px solid ${colors.grey[300]}`,
+    border: `24px solid ${theme.palette.grey[300]}`,
     padding: 0,
   },
   nested: {
