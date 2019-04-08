@@ -45,10 +45,6 @@ const styles = () => ({
   body: {
     padding: 4,
   },
-  draftBody: {
-    display: 'flex',
-    alignItems: 'center',
-  },
   snippet: {
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
@@ -59,7 +55,7 @@ const styles = () => ({
 })
 
 const Message = ({
-  classes, snippet, payload, draft, id,
+  classes, snippet, payload, id,
 }) => {
   const { trashMessage } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
@@ -101,7 +97,7 @@ const Message = ({
         >
           { sender.name[0] }
         </Avatar>
-        <div className={draft ? classes.draftBody : classes.body}>
+        <div className={classes.body}>
           <div className={classes.head}>
             <strong>{ sender.name }</strong>
             <div className={classes.actions}>

@@ -12,6 +12,7 @@ export default ({
     SEND: 'Send',
     REMINDER: 'Reminder',
     TRASH: 'Trash',
+    CONTACTS: 'Contacts',
     SPAM: 'Spam',
   },
   date: {

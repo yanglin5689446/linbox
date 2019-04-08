@@ -12,14 +12,15 @@ export default ({
     SEND: '寄件備份',
     REMINDER: '提醒',
     TRASH: '垃圾桶',
+    CONTACTS: '聯絡人',
     SPAM: '垃圾郵件',
   },
   date: {
     TODAY: '今天',
     YESTERDAY: '昨天',
     THIS_MONTH: '本月',
-    MONTH: '{{date.month + 1}}月',
-    YEAR_N_MONTH: '{{date.year}}年{{date.month + 1}}月',
+    MONTH: '{{date.month}}月',
+    YEAR_N_MONTH: '{{date.year}}年{{date.month}}月',
     EARLIER: '更早',
   },
   draft: {

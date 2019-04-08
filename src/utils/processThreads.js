@@ -47,11 +47,11 @@ const categorizeByDate = (result, date, value) => {
   } else if (date > dayjs().startOf('year')) {
     pushOrNew(result, value, 'MONTH')
     // eslint-disable-next-line
-    result[result.length - 1].date = { month: date.month() }
+    result[result.length - 1].date = { month: date.month() + 1 }
   } else if (date > dayjs().subtract(1, 'year').startOf('year')) {
     pushOrNew(result, value, 'YEAR_N_MONTH')
     // eslint-disable-next-line
-    result[result.length - 1].date = { year: date.year(), month: date.month() }
+    result[result.length - 1].date = { year: date.year(), month: date.month() + 1 }
   } else {
     pushOrNew(result, value, 'EARLIER')
   }

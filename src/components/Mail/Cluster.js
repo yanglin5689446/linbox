@@ -94,8 +94,6 @@ const Cluster = ({ classes, labelIds, threads }) => {
               </React.Fragment>
             )
         }
-
-
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.content}>
         {

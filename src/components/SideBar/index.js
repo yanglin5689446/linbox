@@ -9,15 +9,8 @@ import {
 } from '@material-ui/core'
 import InboxIcon from '@material-ui/icons/Inbox'
 import DraftsIcon from '@material-ui/icons/Drafts'
-import AccessTimeIcon from '@material-ui/icons/AccessTime'
 import CheckIcon from '@material-ui/icons/Check'
-import SendIcon from '@material-ui/icons/Send'
-import NotificationsIcon from '@material-ui/icons/Notifications'
-import DeleteIcon from '@material-ui/icons/Delete'
-import ReportIcon from '@material-ui/icons/Report'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
-import SettingsIcon from '@material-ui/icons/Settings'
-import AddIcon from '@material-ui/icons/Add'
 import { useTranslation } from 'react-i18next'
 
 import AppBar from 'components/AppBar'
@@ -38,25 +31,41 @@ const SideBar = ({ classes, open }) => {
       >
         <List component='nav'>
           <Tab icon={<InboxIcon className={classes.inbox} />} to='/' text={t('INBOX')} />
-          <Tab icon={<AccessTimeIcon className={classes.snoozed} />} to='/snoozed' text={t('SNOOZED')} />
+          {/*
+            <Tab
+              icon={<AccessTimeIcon
+              className={classes.snoozed} />}
+              to='/snoozed'
+              text={t('SNOOZED')}
+            />
+          */}
           <Tab icon={<CheckIcon className={classes.done} />} to='/done' text={t('DONE')} />
 
           <Divider className={classes.divider} />
 
           <Tab icon={<DraftsIcon />} to='/drafts' text={t('DRAFTS')} />
-          <Tab icon={<SendIcon />} to='/Send' text={t('SEND')} />
-          <Tab icon={<NotificationsIcon />} to='/reminder' text={t('REMINDER')} />
-          <Tab icon={<DeleteIcon />} to='/trash' text={t('TRASH')} />
-          <Tab icon={<ReportIcon />} to='/spam' text={t('SPAM')} />
-          <Tab icon={<AccountBoxIcon />} text='Contacts' />
+          {/*
+            <Tab icon={<SendIcon />} to='/Send' text={t('SEND')} />
+            <Tab icon={<NotificationsIcon />} to='/reminder' text={t('REMINDER')} />
+            <Tab icon={<DeleteIcon />} to='/trash' text={t('TRASH')} />
+            <Tab icon={<ReportIcon />} to='/spam' text={t('SPAM')} />
+          */}
+          <Tab
+            icon={<AccountBoxIcon />}
+            text={t('CONTACTS')}
+            to='https://contacts.google.com/'
+            external
+          />
 
           <Divider className={classes.divider} />
 
-          <Tab icon={<AddIcon />} text='Create...' />
+          {/*
+            <Tab icon={<AddIcon />} text='Create...' />
 
-          <Divider className={classes.divider} />
+            <Divider className={classes.divider} />
 
-          <Tab icon={<SettingsIcon />} text='Settings' />
+            <Tab icon={<SettingsIcon />} text='Settings' />
+          */}
         </List>
       </Drawer>
     </div>

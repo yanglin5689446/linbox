@@ -4,7 +4,7 @@ import {
   withStyles,
 } from '@material-ui/core'
 
-import Message from 'components/Mail/Message'
+import Draft from 'components/Mail/Draft'
 
 import DraftsContext from 'context/drafts'
 import useGmailAPI from 'utils/hooks/gmail_api'
@@ -30,7 +30,7 @@ const Drafts = ({ classes }) => {
     <div className={classes.container}>
       {
         Object.values(drafts.drafts)
-          .map(draft => <Message key={draft.id} {...draft.message} draft />)
+          .map(draft => <Draft key={draft.id} draftId={draft.id} {...draft.message} />)
       }
     </div>
   )

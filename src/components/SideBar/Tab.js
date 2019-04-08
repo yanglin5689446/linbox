@@ -7,15 +7,15 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  colors,
 } from '@material-ui/core'
+import CallMadeIcon from '@material-ui/icons/CallMade'
 
-const styles = () => ({
+const styles = theme => ({
   root: {
     padding: '8px 16px',
   },
   icon: {
-    color: colors.grey[600],
+    color: theme.palette.grey[600],
     marginRight: 8,
   },
   navlink: {
@@ -25,12 +25,38 @@ const styles = () => ({
       fontWeight: 'bold',
     },
   },
+  externalLinkIcon: {
+    fontSize: 16,
+    color: theme.palette.grey[600],
+    marginRight: 12,
+    marginLeft: 4,
+    verticalAlign: -2,
+    display: 'none',
+    '$root:hover &': {
+      display: 'inline-block',
+    },
+  },
 })
 
+const LinkTo = ({
+  classes, text, to, external,
+}) => (external
+  ? (
+    <a href={to} className={classes.navlink} target='_blank' rel='noopener noreferrer'>
+      {text}
+      <CallMadeIcon className={classes.externalLinkIcon} />
+    </a>
+  )
+  : <NavLink className={classes.navlink} exact to={to}>{ text }</NavLink>)
+
 const Tab = withRouter(({
-  classes, text, icon, to, history,
+  classes, text, icon, to, external, history,
 }) => (
-  <ListItem className={classes.root} button onClick={() => (to ? history.push(to) : null)}>
+  <ListItem
+    classes={{ root: classes.root }}
+    button
+    onClick={() => to && !external && history.push(to)}
+  >
     <ListItemIcon className={classes.icon}>
       { icon }
     </ListItemIcon>
@@ -38,10 +64,11 @@ const Tab = withRouter(({
       primaryTypographyProps={{ variant: 'body1' }}
       primary={
         to
-          ? <NavLink className={classes.navlink} exact to={to}>{ text }</NavLink>
+          ? <LinkTo classes={classes} to={to} text={text} external={external} />
           : text
       }
     />
+
   </ListItem>
 ))
 

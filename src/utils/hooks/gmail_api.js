@@ -35,16 +35,6 @@ const useGmailAPI = () => {
         updateMails({ raw: threads })
       })
   }, [])
-  const trashMessage = useCallback((id) => {
-    const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
-    gmailApi.users.messages.trash({ userId, id }).then(loadMails)
-  }, [])
-  const trashThread = useCallback((id) => {
-    const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
-    gmailApi.users.threads.trash({ userId, id }).then(loadMails)
-  }, [])
 
   const loadDrafts = useCallback(() => {
     const userId = user.emailAddresses[0].value
@@ -58,6 +48,23 @@ const useGmailAPI = () => {
         updateDrafts(drafts)
       })
   }, [])
+
+  const trashDraft = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    // @todo: optimize this so that it won't reload after every deletion
+    gmailApi.users.threads.trash({ userId, id }).then(loadDrafts)
+  }, [])
+  const trashMessage = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    // @todo: optimize this so that it won't reload after every deletion
+    gmailApi.users.messages.trash({ userId, id }).then(loadMails)
+  }, [])
+  const trashThread = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    // @todo: optimize this so that it won't reload after every deletion
+    gmailApi.users.threads.trash({ userId, id }).then(loadMails)
+  }, [])
+
   const createDraft = useCallback((draft) => {
     const userId = user.emailAddresses[0].value
     gmailApi.users.drafts.create({ userId, message: { raw: draft.content } })
@@ -88,6 +95,7 @@ const useGmailAPI = () => {
   })
   return {
     loadMails,
+    trashDraft,
     trashThread,
     trashMessage,
     loadDrafts,
