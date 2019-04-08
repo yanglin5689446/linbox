@@ -13,7 +13,7 @@ export const threadSharedStyles = theme => ({
     maxWidth: '100%',
   },
   sender: {
-    flex: 2,
+    flex: 1,
     display: 'flex',
   },
   avatar: {
@@ -21,18 +21,37 @@ export const threadSharedStyles = theme => ({
     width: 24,
   },
   name: {
+    flex: 3,
+    minWidth: 0,
     width: 150,
+    whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     paddingLeft: 16,
     paddingRight: 16,
   },
   brief: {
-    flex: 8,
+    flex: 6,
     minWidth: 0,
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
+  },
+  actions: {
+    padding: '0 !important',
+    display: 'none',
+    '$summary:hover &': {
+      display: 'block',
+    },
+  },
+  actionIcon: {
+    margin: '0 4px',
+    fontSize: '1.25rem',
+    cursor: 'pointer',
+    opacity: 0.78,
+    '&:hover': {
+      opacity: 1,
+    },
   },
 })
 

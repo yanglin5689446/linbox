@@ -35,6 +35,17 @@ const useGmailAPI = () => {
         updateMails({ raw: threads })
       })
   }, [])
+  const trashMessage = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    // @todo: optimize this so that it won't reload after every deletion
+    gmailApi.users.messages.trash({ userId, id }).then(loadMails)
+  }, [])
+  const trashThread = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    // @todo: optimize this so that it won't reload after every deletion
+    gmailApi.users.threads.trash({ userId, id }).then(loadMails)
+  }, [])
+
   const loadDrafts = useCallback(() => {
     const userId = user.emailAddresses[0].value
     gmailApi.users.drafts.list({ userId })
@@ -76,7 +87,14 @@ const useGmailAPI = () => {
       .then(() => closeDraftEdit(id))
   })
   return {
-    loadMails, loadDrafts, createDraft, updateDraft, sendDraft, deleteDraft,
+    loadMails,
+    trashThread,
+    trashMessage,
+    loadDrafts,
+    createDraft,
+    updateDraft,
+    sendDraft,
+    deleteDraft,
   }
 }
 

@@ -11,9 +11,12 @@ import {
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 
+import DeleteIcon from '@material-ui/icons/Delete'
+
 import Thread from 'components/Mail/Thread'
 import { labels } from 'constants/system_labels'
 import getSender from 'utils/getSender'
+import useGmailAPI from 'utils/hooks/gmail_api'
 
 import { threadSharedStyles } from './styles'
 
@@ -36,6 +39,7 @@ const styles = theme => ({
 })
 
 const Cluster = ({ classes, labelIds, threads }) => {
+  const { trashThread } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
   const labelId = labelIds.find(e => labels.includes(e))
   const { t } = useTranslation(['labels', 'date'])
@@ -76,6 +80,17 @@ const Cluster = ({ classes, labelIds, threads }) => {
                 <Typography className={classes.brief}>
                   { [...new Set(senders.map(getSenderName))].join(', ') }
                 </Typography>
+                <div className={classes.actions}>
+                  <DeleteIcon
+                    className={classes.actionIcon}
+                    onClick={(e) => {
+                      Object.values(threads)
+                        .forEach(nested => nested.threads
+                          .forEach(thread => trashThread(thread.messages[0].threadId)))
+                      e.stopPropagation()
+                    }}
+                  />
+                </div>
               </React.Fragment>
             )
         }

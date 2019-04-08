@@ -12,6 +12,10 @@ import {
 import Message from 'components/Mail/Message'
 import getSender from 'utils/getSender'
 
+import DeleteIcon from '@material-ui/icons/Delete'
+
+import useGmailAPI from 'utils/hooks/gmail_api'
+
 import { threadSharedStyles } from './styles'
 
 const styles = theme => ({
@@ -29,6 +33,7 @@ const styles = theme => ({
 })
 
 const Thread = ({ classes, messages }) => {
+  const { trashThread } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
   const getSubject = useCallback(message => message.payload
     .headers
@@ -62,6 +67,15 @@ const Thread = ({ classes, messages }) => {
                   { getSubject(messages[0]) }
                   <span className={classes.snippet}>{ ` - ${messages[0].snippet}` }</span>
                 </Typography>
+                <div className={classes.actions}>
+                  <DeleteIcon
+                    className={classes.actionIcon}
+                    onClick={(e) => {
+                      trashThread(messages[0].threadId)
+                      e.stopPropagation()
+                    }}
+                  />
+                </div>
               </React.Fragment>
             )
         }
