@@ -60,9 +60,7 @@ const useGoogleAPI = () => {
       clientId: '283173290792-09mip7ds9kjfo77qs1p4c3ea07pk2mot.apps.googleusercontent.com',
       scope: [
         'profile',
-        'https://www.googleapis.com/auth/gmail.readonly',
-        'https://www.googleapis.com/auth/gmail.compose',
-        'https://www.googleapis.com/auth/gmail.send',
+        'https://mail.google.com/',
         'https://www.google.com/m8/feeds',
       ].join(' '),
     }).then(() => {

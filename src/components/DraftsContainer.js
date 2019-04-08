@@ -17,7 +17,7 @@ const styles = () => ({
 const DraftsContainer = ({ classes, drafts }) => (
   <div className={classes.root}>
     {
-      Object.entries(drafts).map(([id, draft]) => <EditDraft key={id} {...draft} />)
+      Object.entries(drafts.editing).map(([id, draft]) => <EditDraft key={id} {...draft} />)
     }
   </div>
 )

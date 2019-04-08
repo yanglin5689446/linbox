@@ -9,36 +9,17 @@ import {
   Avatar,
   colors,
 } from '@material-ui/core'
-import Message from 'components/Message'
+import Message from 'components/Mail/Message'
 import getSender from 'utils/getSender'
 
-const styles = () => ({
-  summary: {
-    display: 'flex',
-  },
-  sender: {
-    flexGrow: 3,
-    display: 'flex',
-  },
-  avatar: {
-    height: 24,
-    width: 24,
-  },
-  name: {
-    width: 150,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  brief: {
-    flexGrow: 7,
-    width: 'calc(70vw - 220px - 24px * 2)',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-  },
+import DeleteIcon from '@material-ui/icons/Delete'
+
+import useGmailAPI from 'utils/hooks/gmail_api'
+
+import { threadSharedStyles } from './styles'
+
+const styles = theme => ({
+  ...threadSharedStyles(theme),
   snippet: {
     color: colors.grey[700],
   },
@@ -52,6 +33,7 @@ const styles = () => ({
 })
 
 const Thread = ({ classes, messages }) => {
+  const { trashThread } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
   const getSubject = useCallback(message => message.payload
     .headers
@@ -62,7 +44,7 @@ const Thread = ({ classes, messages }) => {
 
   return (
     <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
-      <ExpansionPanelSummary className={classes.summary}>
+      <ExpansionPanelSummary classes={{ root: classes.summary, content: classes.summaryContent }}>
         {
           expanded
             ? <span className={classes.subject}>{ getSubject(messages[0]) }</span>
@@ -85,6 +67,15 @@ const Thread = ({ classes, messages }) => {
                   { getSubject(messages[0]) }
                   <span className={classes.snippet}>{ ` - ${messages[0].snippet}` }</span>
                 </Typography>
+                <div className={classes.actions}>
+                  <DeleteIcon
+                    className={classes.actionIcon}
+                    onClick={(e) => {
+                      trashThread(messages[0].threadId)
+                      e.stopPropagation()
+                    }}
+                  />
+                </div>
               </React.Fragment>
             )
         }

@@ -7,50 +7,24 @@ import {
   ExpansionPanelDetails,
   Typography,
   Avatar,
-  colors,
 } from '@material-ui/core'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 
-import Thread from 'components/Thread'
+import DeleteIcon from '@material-ui/icons/Delete'
+
+import Thread from 'components/Mail/Thread'
 import { labels } from 'constants/system_labels'
 import getSender from 'utils/getSender'
+import useGmailAPI from 'utils/hooks/gmail_api'
 
-const styles = () => ({
-  expanded: {
-    transition: 'all .1s',
-    background: colors.grey[300],
-    width: 'calc(100% + 48px)',
-    marginLeft: -24,
-  },
-  summary: {
-    display: 'flex',
-  },
-  sender: {
-    flexGrow: 3,
-    display: 'flex',
-  },
-  avatar: {
-    height: 24,
-    width: 24,
-  },
-  name: {
-    width: 150,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    paddingLeft: 16,
-    paddingRight: 16,
-  },
-  brief: {
-    flexGrow: 7,
-    width: 'calc(70vw - 220px - 24px * 2)',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-  },
+import { threadSharedStyles } from './styles'
+
+const styles = theme => ({
+  ...threadSharedStyles(theme),
   content: {
     display: 'block',
-    border: `24px solid ${colors.grey[300]}`,
+    border: `24px solid ${theme.palette.grey[300]}`,
     padding: 0,
   },
   nested: {
@@ -65,6 +39,7 @@ const styles = () => ({
 })
 
 const Cluster = ({ classes, labelIds, threads }) => {
+  const { trashThread } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
   const labelId = labelIds.find(e => labels.includes(e))
   const { t } = useTranslation(['labels', 'date'])
@@ -81,7 +56,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
       onChange={() => setExpanded(exp => !exp)}
       className={classNames(expanded && classes.expanded)}
     >
-      <ExpansionPanelSummary className={classes.summary}>
+      <ExpansionPanelSummary classes={{ root: classes.summary, content: classes.summaryContent }}>
         {
           expanded
             ? (
@@ -105,6 +80,17 @@ const Cluster = ({ classes, labelIds, threads }) => {
                 <Typography className={classes.brief}>
                   { [...new Set(senders.map(getSenderName))].join(', ') }
                 </Typography>
+                <div className={classes.actions}>
+                  <DeleteIcon
+                    className={classes.actionIcon}
+                    onClick={(e) => {
+                      Object.values(threads)
+                        .forEach(nested => nested.threads
+                          .forEach(thread => trashThread(thread.messages[0].threadId)))
+                      e.stopPropagation()
+                    }}
+                  />
+                </div>
               </React.Fragment>
             )
         }

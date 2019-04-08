@@ -18,8 +18,8 @@ export default ({
     TODAY: '今天',
     YESTERDAY: '昨天',
     THIS_MONTH: '本月',
-    MONTH: '{{date.month}}月',
-    YEAR_N_MONTH: '{{date.year}}年{{date.month}}月',
+    MONTH: '{{date.month + 1}}月',
+    YEAR_N_MONTH: '{{date.year}}年{{date.month + 1}}月',
     EARLIER: '更早',
   },
   draft: {

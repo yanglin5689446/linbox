@@ -4,6 +4,7 @@ import React, { useReducer, useCallback } from 'react'
 const DraftsContext = React.createContext()
 
 const actions = {
+  updateDrafts: 'UPDATE_DRAFTS',
   newDraftEdit: 'NEW_DRAFT_EDIT',
   closeDraftEdit: 'CLOSE_DRAFT_EDIT',
   updateDraftEdit: 'UPDATE_DRAFT_EDIT',
@@ -12,18 +13,29 @@ const actions = {
 const reducer = (state, action) => {
   const { payload } = action
   switch (action.type) {
+    case 'UPDATE_DRAFTS':
+      return { ...state, drafts: payload }
     case 'NEW_DRAFT_EDIT':
-      return { ...state, [payload.id]: payload }
+      return {
+        ...state,
+        editing: {
+          ...state.editing,
+          [payload.id]: payload,
+        },
+      }
     case 'CLOSE_DRAFT_EDIT': {
-      const { [payload]: discard, ...newState } = state
-      return newState
+      const { [payload]: discard, ...editing } = state.editing
+      return { ...state, editing }
     }
     case 'UPDATE_DRAFT_EDIT':
       return {
         ...state,
-        [payload.id]: {
-          ...state[payload.id],
-          ...payload,
+        editing: {
+          ...state.editing,
+          [payload.id]: {
+            ...state[payload.id],
+            ...payload,
+          },
         },
       }
     default:
@@ -32,7 +44,14 @@ const reducer = (state, action) => {
 }
 
 export const DraftsWrapper = Component => (props) => {
-  const [drafts, dispatch] = useReducer(reducer, [])
+  const [drafts, dispatch] = useReducer(reducer, {
+    drafts: [],
+    editing: {},
+  })
+  const updateDrafts = useCallback(payload => dispatch({
+    type: actions.updateDrafts,
+    payload,
+  }), [])
   const newDraftEdit = useCallback(payload => dispatch({
     type: actions.newDraftEdit,
     payload,
@@ -48,7 +67,7 @@ export const DraftsWrapper = Component => (props) => {
 
   return (
     <DraftsContext.Provider value={{
-      drafts, newDraftEdit, closeDraftEdit, updateDraftEdit,
+      drafts, newDraftEdit, closeDraftEdit, updateDraftEdit, updateDrafts,
     }}
     >
       <Component {...props} />

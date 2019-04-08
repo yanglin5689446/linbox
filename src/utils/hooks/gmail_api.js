@@ -18,7 +18,9 @@ const encodeDraft = compose(
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
   const { updateMails } = useContext(MailsContext)
-  const { newDraftEdit, updateDraftEdit, closeDraftEdit } = useContext(DraftsContext)
+  const {
+    newDraftEdit, updateDraftEdit, closeDraftEdit, updateDrafts,
+  } = useContext(DraftsContext)
   const { apiClient } = useGoogleAPI()
   const gmailApi = apiClient.gmail
 
@@ -31,6 +33,29 @@ const useGmailAPI = () => {
       .then((responses) => {
         const threads = responses.map(({ result }) => result)
         updateMails({ raw: threads })
+      })
+  }, [])
+  const trashMessage = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    // @todo: optimize this so that it won't reload after every deletion
+    gmailApi.users.messages.trash({ userId, id }).then(loadMails)
+  }, [])
+  const trashThread = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    // @todo: optimize this so that it won't reload after every deletion
+    gmailApi.users.threads.trash({ userId, id }).then(loadMails)
+  }, [])
+
+  const loadDrafts = useCallback(() => {
+    const userId = user.emailAddresses[0].value
+    gmailApi.users.drafts.list({ userId })
+      .then(({ result }) => Promise.all(
+        result.drafts.map(({ id }) => gmailApi.users.drafts.get({ userId, id })),
+      ))
+      .then((responses) => {
+        const drafts = responses.map(({ result }) => result)
+          .reduce((accum, current) => ({ ...accum, [current.id]: current }), {})
+        updateDrafts(drafts)
       })
   }, [])
   const createDraft = useCallback((draft) => {
@@ -62,7 +87,14 @@ const useGmailAPI = () => {
       .then(() => closeDraftEdit(id))
   })
   return {
-    loadMails, createDraft, updateDraft, sendDraft, deleteDraft,
+    loadMails,
+    trashThread,
+    trashMessage,
+    loadDrafts,
+    createDraft,
+    updateDraft,
+    sendDraft,
+    deleteDraft,
   }
 }
 

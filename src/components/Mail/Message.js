@@ -7,10 +7,12 @@ import {
   Avatar,
   colors,
 } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
 
 import URLSafeBase64 from 'urlsafe-base64'
 
 import getSender from 'utils/getSender'
+import useGmailAPI from 'utils/hooks/gmail_api'
 
 const styles = () => ({
   root: {
@@ -20,15 +22,32 @@ const styles = () => ({
   },
   content: {
     display: 'flex',
-    padding: 8,
+    padding: '8px !important',
+  },
+  head: {
+    display: 'flex',
+    justifyContent: 'space-between',
   },
   avatar: {
     height: 32,
     width: 32,
     margin: '4px 12px',
   },
+  actionIcon: {
+    margin: '0 4px',
+    fontSize: '1.25rem',
+    cursor: 'pointer',
+    opacity: 0.78,
+    '&:hover': {
+      opacity: 1,
+    },
+  },
   body: {
     padding: 4,
+  },
+  draftBody: {
+    display: 'flex',
+    alignItems: 'center',
   },
   snippet: {
     whiteSpace: 'nowrap',
@@ -39,7 +58,10 @@ const styles = () => ({
   },
 })
 
-const Message = ({ classes, snippet, payload }) => {
+const Message = ({
+  classes, snippet, payload, draft, id,
+}) => {
+  const { trashMessage } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
   const parsePayloadType = useCallback((p) => {
     switch (p.mimeType) {
@@ -79,16 +101,24 @@ const Message = ({ classes, snippet, payload }) => {
         >
           { sender.name[0] }
         </Avatar>
-        <div className={classes.body}>
-          <strong>{ sender.name }</strong>
-          <br />
+        <div className={draft ? classes.draftBody : classes.body}>
+          <div className={classes.head}>
+            <strong>{ sender.name }</strong>
+            <div className={classes.actions}>
+              <DeleteIcon
+                className={classes.actionIcon}
+                onClick={(e) => {
+                  trashMessage(id)
+                  e.stopPropagation()
+                }}
+              />
+            </div>
+          </div>
           {
             expanded
               ? content
               : <div className={classes.snippet}>{ snippet }</div>
-
           }
-
         </div>
       </CardContent>
     </Card>
