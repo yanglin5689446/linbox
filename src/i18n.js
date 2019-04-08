@@ -61,7 +61,7 @@ i18n
             'October',
             'November',
             'December',
-          ][value]
+          ][value - 1]
         }
         return value
       },
