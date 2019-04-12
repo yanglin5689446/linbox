@@ -12,19 +12,24 @@ const useGoogleAPI = () => {
   const { updateContacts } = useContext(ContactsContext)
 
   const getContacts = useCallback(() => {
-    const token = gapi.auth.getToken().access_token
-    const endpoint = `https://www.googleapis.com/m8/feeds/contacts/default/thin?alt=json&access_token=${token}&max-results=500&v=3.0`
-    fetchJsonp(endpoint)
-      .then(response => response.json())
-      .then(json => updateContacts(json.feed.entry
-        .filter(contact => contact.gd$email)
-        .map(contact => ({
-          id: contact.id.$t.split('/').pop(),
-          email: contact.gd$email[0].address,
-          name: contact.gd$name,
-          title: contact.title.$t,
-          photo: contact.link,
-        }))))
+    try {
+      const token = gapi.auth.getToken().access_token
+      const endpoint = `https://www.googleapis.com/m8/feeds/contacts/default/thin?alt=json&access_token=${token}&max-results=500&v=3.0`
+      fetchJsonp(endpoint)
+        .then(response => response.json())
+        .then(json => updateContacts(json.feed.entry
+          .filter(contact => contact.gd$email)
+          .map(contact => ({
+            id: contact.id.$t.split('/').pop(),
+            email: contact.gd$email[0].address,
+            name: contact.gd$name,
+            title: contact.title.$t,
+            photo: contact.link,
+          }))))
+    } catch (e) {
+      // eslint-disable-next-line
+      window.alert('Linbox require new oauth scopes, please logout and try again.')
+    }
   }, [])
 
   const signIn = useCallback(() => gapi.auth2.getAuthInstance().signIn(), [])
