@@ -83,7 +83,13 @@ const Thread = ({ classes, messages }) => {
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.mails}>
         {
-          messages.map(message => <Message key={message.id} {...message} />)
+          messages.map((message, index) => (
+            <Message
+              key={message.id}
+              initialExpand={index === messages.length - 1}
+              {...message}
+            />
+          ))
         }
       </ExpansionPanelDetails>
     </ExpansionPanel>
