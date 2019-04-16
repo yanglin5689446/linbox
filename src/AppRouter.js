@@ -14,8 +14,10 @@ import useGmailAPI from 'utils/hooks/gmail_api'
 const Dummy = name => () => (<div>{name}</div>)
 
 const AppRouter = () => {
-  const { loadMails } = useGmailAPI()
+  const { loadMails, getLabels } = useGmailAPI()
   useEffect(loadMails, [])
+  useEffect(getLabels, [])
+
   return (
     <BrowserRouter>
       <CssBaseline />

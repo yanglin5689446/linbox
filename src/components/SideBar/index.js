@@ -1,5 +1,5 @@
 
-import React from 'react'
+import React, { useContext } from 'react'
 import {
   withStyles,
   Drawer,
@@ -11,13 +11,16 @@ import InboxIcon from '@material-ui/icons/Inbox'
 import DraftsIcon from '@material-ui/icons/Drafts'
 import CheckIcon from '@material-ui/icons/Check'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
+import EmailIcon from '@material-ui/icons/Email'
 import { useTranslation } from 'react-i18next'
+import LabelsContext from 'context/labels'
 
 import AppBar from 'components/AppBar'
 import Tab from './Tab'
 
 const SideBar = ({ classes, open }) => {
   const { t } = useTranslation(['sidebar'])
+  const { labels } = useContext(LabelsContext)
   return (
     <div>
       <Drawer
@@ -50,12 +53,23 @@ const SideBar = ({ classes, open }) => {
             <Tab icon={<DeleteIcon />} to='/trash' text={t('TRASH')} />
             <Tab icon={<ReportIcon />} to='/spam' text={t('SPAM')} />
           */}
+
           <Tab
             icon={<AccountBoxIcon />}
             text={t('CONTACTS')}
             to='https://contacts.google.com/'
             external
           />
+
+          <Divider className={classes.divider} />
+
+          {
+            labels.user
+              ? labels.user
+                .filter(label => label.type === 'user')
+                .map(label => <Tab key={label.id} icon={<EmailIcon />} text={label.name} />)
+              : null
+          }
 
           <Divider className={classes.divider} />
 

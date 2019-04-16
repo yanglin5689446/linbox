@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 import compose from 'utils/compose'
-import { labels, personal } from 'constants/system_labels'
 
 dayjs.extend(relativeTime)
 
@@ -12,18 +11,20 @@ dayjs.extend(relativeTime)
 // threads with personal lable are not included.
 // so the return type is [(cluster | thread)]
 // @todo: inlcudes user defined cluster
-const clusterize = (threads) => {
+const clusterize = (threads, labels) => {
   const result = []
   threads.forEach((thread) => {
-    const found = labels.find(e => thread.messages[0].labelIds.includes(e))
-    if (found) {
-      const index = result.findIndex(e => e.labelIds && e.labelIds.includes(found))
+    const latestMessage = thread.messages[0]
+    const foundLabel = labels.user.find(e => latestMessage.labelIds.includes(e.id))
+      || labels.category.find(e => latestMessage.labelIds.includes(e.id))
+    if (foundLabel) {
+      const index = result.findIndex(e => e.labelIds && e.labelIds.includes(foundLabel.id))
       if (index === -1) {
-        result.push({ labelIds: thread.messages[0].labelIds, threads: [thread] })
+        result.push({ labelIds: latestMessage.labelIds, threads: [thread] })
       } else {
         result[index].threads.push(thread)
       }
-    } else if (thread.messages[0].labelIds.includes(personal)) {
+    } else if (latestMessage.labelIds.includes('CATEGORY_PERSONAL')) {
       result.push(thread)
     }
   })

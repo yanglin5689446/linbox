@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext } from 'react'
 import {
   withStyles,
   ExpansionPanel,
@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next'
 
 import DeleteIcon from '@material-ui/icons/Delete'
 
+import LabelsContext from 'context/labels'
 import Thread from 'components/Mail/Thread'
-import { labels } from 'constants/system_labels'
 import getSender from 'utils/getSender'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
@@ -40,9 +40,16 @@ const styles = theme => ({
 
 const Cluster = ({ classes, labelIds, threads }) => {
   const { trashThread } = useGmailAPI()
+  const { labels } = useContext(LabelsContext)
   const [expanded, setExpanded] = useState(false)
-  const labelId = labelIds.find(e => labels.includes(e))
+  const getLabel = useCallback((ids) => {
+    let label = labels.user.find(l => ids.includes(l.id))
+    if (!label)label = labels.category.find(l => ids.includes(l.id))
+    return label
+  })
+  const label = getLabel(labelIds)
   const { t } = useTranslation(['labels', 'date'])
+
   const senders = threads
     .map(thread => thread.threads)
     .flat()
@@ -61,7 +68,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
           expanded
             ? (
               <Typography variant='h5' classes={{ h5: classes.label }}>
-                { t(labelId) }
+                { label.type === 'system' ? t(label.id) : label.name }
               </Typography>
             )
             : (
@@ -71,10 +78,10 @@ const Cluster = ({ classes, labelIds, threads }) => {
                     alt=''
                     className={classes.avatar}
                   >
-                    { labelId[0] }
+                    { label.name[0] }
                   </Avatar>
                   <Typography className={classes.name}>
-                    { t(labelId) }
+                    { label.type === 'system' ? t(label.id) : label.name }
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
