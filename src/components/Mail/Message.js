@@ -55,10 +55,10 @@ const styles = () => ({
 })
 
 const Message = ({
-  classes, snippet, payload, id,
+  classes, snippet, payload, id, initialExpand,
 }) => {
   const { trashMessage } = useGmailAPI()
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(initialExpand)
   const parsePayloadType = useCallback((p) => {
     switch (p.mimeType) {
       case 'text/plain':

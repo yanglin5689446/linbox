@@ -5,6 +5,7 @@ import URLSafeBase64 from 'urlsafe-base64'
 import UserContext from 'context/user'
 import MailsContext from 'context/mails'
 import DraftsContext from 'context/drafts'
+import LabelsContext from 'context/labels'
 import useGoogleAPI from 'utils/hooks/google_api'
 import compose from 'utils/compose'
 import rfc5322 from 'utils/rfc5322'
@@ -18,11 +19,32 @@ const encodeDraft = compose(
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
   const { updateMails } = useContext(MailsContext)
+  const { updateLabels } = useContext(LabelsContext)
   const {
     newDraftEdit, updateDraftEdit, closeDraftEdit, updateDrafts,
   } = useContext(DraftsContext)
   const { apiClient } = useGoogleAPI()
   const gmailApi = apiClient.gmail
+
+  const getLabels = useCallback(() => {
+    const userId = user.emailAddresses[0].value
+    gmailApi.users.labels.list({ userId })
+      .then(({ result }) => {
+        const systemAll = result.labels.filter(label => label.type === 'system')
+        const category = systemAll
+          .filter(label => label.id.startsWith('CATEGORY') && !label.id.endsWith('PERSONAL'))
+        const system = result.labels.filter(label => label.type === 'system')
+          .filter(label => !label.id.startsWith('CATEGORY') || label.id.endsWith('PERSONAL'))
+        const userLabels = result.labels.filter(label => label.type === 'user')
+
+        const labels = {
+          category,
+          system,
+          user: userLabels,
+        }
+        updateLabels(labels)
+      })
+  })
 
   const loadMails = useCallback(() => {
     const userId = user.emailAddresses[0].value
@@ -95,6 +117,7 @@ const useGmailAPI = () => {
   })
   return {
     loadMails,
+    getLabels,
     trashDraft,
     trashThread,
     trashMessage,

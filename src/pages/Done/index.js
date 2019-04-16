@@ -7,9 +7,9 @@ import {
 import TimeSlice from 'components/Mail/TimeSlice'
 
 import MailsContext from 'context/mails'
+import LabelsContext from 'context/labels'
 import processThreads from 'utils/processThreads'
 import filterThreadsByLabel from 'utils/filterThreadsByLabel'
-import compose from 'utils/compose'
 
 const styles = () => ({
   container: {
@@ -22,10 +22,13 @@ const styles = () => ({
 
 const Done = ({ classes }) => {
   const { mails } = useContext(MailsContext)
-  const getDoneMails = useCallback(() => compose(
-    processThreads,
-    filterThreadsByLabel(labels => !labels.some(e => ['INBOX', 'TRASH', 'SPAM'].includes(e))),
-  )(mails.raw), [mails.raw])
+  const { labels } = useContext(LabelsContext)
+  const getDoneMails = useCallback(() => {
+    const threads = filterThreadsByLabel(labelIds => !labelIds
+      .some(e => ['INBOX', 'TRASH', 'SPAM']
+        .includes(e)))(mails.raw)
+    return processThreads(threads, labels)
+  }, [mails.raw])
 
   const doneMails = getDoneMails()
 

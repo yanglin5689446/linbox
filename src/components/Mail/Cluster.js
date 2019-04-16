@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext } from 'react'
 import {
   withStyles,
   ExpansionPanel,
@@ -7,14 +7,19 @@ import {
   ExpansionPanelDetails,
   Typography,
   Avatar,
+  colors,
 } from '@material-ui/core'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 
 import DeleteIcon from '@material-ui/icons/Delete'
+import LocalOfferIcon from '@material-ui/icons/LocalOffer'
+import PeopleIcon from '@material-ui/icons/People'
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
+import FlagIcon from '@material-ui/icons/Flag'
 
+import LabelsContext from 'context/labels'
 import Thread from 'components/Mail/Thread'
-import { labels } from 'constants/system_labels'
 import getSender from 'utils/getSender'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
@@ -33,16 +38,59 @@ const styles = theme => ({
     paddingLeft: 24,
     margin: 5,
   },
+  threadCount: {
+    paddingLeft: 4,
+    color: theme.palette.grey[700],
+  },
   label: {
     padding: '0 24px',
   },
+  systemLabels: {
+    background: 'transparent',
+  },
+  forum: {
+    color: colors.indigo[600],
+  },
+  updates: {
+    color: colors.deepOrange[500],
+  },
+  promotion: {
+    color: colors.cyan[300],
+  },
+  social: {
+    color: colors.red[700],
+  },
 })
+
+const getLabelIcon = (label) => {
+  switch (label.id) {
+    case 'CATEGORY_FORUM':
+      return <QuestionAnswerIcon />
+    case 'CATEGORY_UPDATES':
+      return <FlagIcon />
+    case 'CATEGORY_PROMOTIONS':
+      return <LocalOfferIcon />
+    case 'CATEGORY_SOCIAL':
+      return <PeopleIcon />
+    default:
+      return null
+  }
+}
+
+const getLabelClass = label => label.id.split('_')[1].toLowerCase()
 
 const Cluster = ({ classes, labelIds, threads }) => {
   const { trashThread } = useGmailAPI()
+  const { labels } = useContext(LabelsContext)
   const [expanded, setExpanded] = useState(false)
-  const labelId = labelIds.find(e => labels.includes(e))
+  const getLabel = useCallback((ids) => {
+    let label = labels.user.find(l => ids.includes(l.id))
+    if (!label)label = labels.category.find(l => ids.includes(l.id))
+    return label
+  })
+  const label = getLabel(labelIds)
   const { t } = useTranslation(['labels', 'date'])
+
   const senders = threads
     .map(thread => thread.threads)
     .flat()
@@ -61,7 +109,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
           expanded
             ? (
               <Typography variant='h5' classes={{ h5: classes.label }}>
-                { t(labelId) }
+                { label.type === 'system' ? t(label.id) : label.name }
               </Typography>
             )
             : (
@@ -69,12 +117,36 @@ const Cluster = ({ classes, labelIds, threads }) => {
                 <div className={classes.sender}>
                   <Avatar
                     alt=''
-                    className={classes.avatar}
+                    className={
+                      classNames(
+                        classes.avatar,
+                        label.type === 'system' && classes.systemLabels,
+                        label.type === 'system' && classes[getLabelClass(label)],
+                      )
+                    }
                   >
-                    { labelId[0] }
+                    {
+                      label.type === 'system'
+                        ? getLabelIcon(label)
+                        : label.name[0]
+                    }
                   </Avatar>
                   <Typography className={classes.name}>
-                    { t(labelId) }
+                    <span className={label.type === 'system' ? classes[getLabelClass(label)] : null}>
+                      { label.type === 'system' ? t(label.id) : label.name }
+                    </span>
+                    {
+                      threads.length > 1
+                        ? (
+                          <span className={classes.threadCount}>
+(
+                            { threads.length }
+)
+                          </span>
+                        )
+                        : null
+                    }
+
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
