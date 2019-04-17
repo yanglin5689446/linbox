@@ -48,13 +48,13 @@ const styles = theme => ({
   systemLabels: {
     background: 'transparent',
   },
-  forum: {
+  forums: {
     color: colors.indigo[600],
   },
   updates: {
     color: colors.deepOrange[500],
   },
-  promotion: {
+  promotions: {
     color: colors.cyan[300],
   },
   social: {
@@ -64,7 +64,7 @@ const styles = theme => ({
 
 const getLabelIcon = (label) => {
   switch (label.id) {
-    case 'CATEGORY_FORUM':
+    case 'CATEGORY_FORUMS':
       return <QuestionAnswerIcon />
     case 'CATEGORY_UPDATES':
       return <FlagIcon />
