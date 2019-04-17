@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import {
   withStyles,
   Card,
@@ -9,9 +9,6 @@ import {
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 
-import URLSafeBase64 from 'urlsafe-base64'
-
-import getSender from 'utils/getSender'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
 const styles = () => ({
@@ -55,36 +52,10 @@ const styles = () => ({
 })
 
 const Message = ({
-  classes, snippet, payload, id, initialExpand,
+  classes, id, from, snippet, content, initialExpand,
 }) => {
   const { trashMessage } = useGmailAPI()
   const [expanded, setExpanded] = useState(initialExpand)
-  const parsePayloadType = useCallback((p) => {
-    switch (p.mimeType) {
-      case 'text/plain':
-        return { type: 'text', raw: p.body.data }
-      case 'text/html':
-        return { type: 'html', raw: p.body.data }
-      default: {
-        let found = p.parts.find(e => e.mimeType === 'text/html')
-        if (found) return { type: 'html', raw: found.body.data }
-        found = p.parts.find(e => e.mimeType === 'text/plain')
-        if (found) return { type: 'text', raw: found.body.data }
-      }
-        return {}
-    }
-  }, [])
-
-  const sender = getSender({ payload })
-  const parsed = parsePayloadType(payload)
-  // @todo: support more mimetype
-  if (!parsed.raw) return null
-  const decoded = new TextDecoder().decode(URLSafeBase64.decode(parsed.raw))
-  const content = parsed.type === 'text'
-    ? <pre>{ decoded }</pre>
-    : <div dangerouslySetInnerHTML={{ __html: decoded }} />
-
-
   return (
     <Card
       onClick={() => setExpanded(exp => !exp)}
@@ -95,11 +66,11 @@ const Message = ({
           alt=''
           className={classes.avatar}
         >
-          { sender.name[0] }
+          { from.name[0] }
         </Avatar>
         <div className={classes.body}>
           <div className={classes.head}>
-            <strong>{ sender.name }</strong>
+            <strong>{ from.name }</strong>
             <div className={classes.actions}>
               <DeleteIcon
                 className={classes.actionIcon}
@@ -112,7 +83,7 @@ const Message = ({
           </div>
           {
             expanded
-              ? content
+              ? <div dangerouslySetInnerHTML={{ __html: content }} />
               : <div className={classes.snippet}>{ snippet }</div>
           }
         </div>

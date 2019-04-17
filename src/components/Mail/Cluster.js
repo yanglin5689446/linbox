@@ -20,7 +20,6 @@ import FlagIcon from '@material-ui/icons/Flag'
 
 import LabelsContext from 'context/labels'
 import Thread from 'components/Mail/Thread'
-import getSender from 'utils/getSender'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
 import { threadSharedStyles } from './styles'
@@ -48,13 +47,13 @@ const styles = theme => ({
   systemLabels: {
     background: 'transparent',
   },
-  forum: {
+  forums: {
     color: colors.indigo[600],
   },
   updates: {
     color: colors.deepOrange[500],
   },
-  promotion: {
+  promotions: {
     color: colors.cyan[300],
   },
   social: {
@@ -64,7 +63,7 @@ const styles = theme => ({
 
 const getLabelIcon = (label) => {
   switch (label.id) {
-    case 'CATEGORY_FORUM':
+    case 'CATEGORY_FORUMS':
       return <QuestionAnswerIcon />
     case 'CATEGORY_UPDATES':
       return <FlagIcon />
@@ -94,9 +93,11 @@ const Cluster = ({ classes, labelIds, threads }) => {
   const senders = threads
     .map(thread => thread.threads)
     .flat()
-    .map(thread => thread.messages[0])
-    .map(getSender)
+    .map(thread => thread.messages[0].from)
   const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
+  const threadCount = Object.values(threads)
+    .map(thread => thread.threads.length)
+    .reduce((accum, current) => accum + current, 0)
 
   return (
     <ExpansionPanel
@@ -136,12 +137,10 @@ const Cluster = ({ classes, labelIds, threads }) => {
                       { label.type === 'system' ? t(label.id) : label.name }
                     </span>
                     {
-                      threads.length > 1
+                      threadCount > 1
                         ? (
                           <span className={classes.threadCount}>
-(
-                            { threads.length }
-)
+                            {`(${threadCount})`}
                           </span>
                         )
                         : null

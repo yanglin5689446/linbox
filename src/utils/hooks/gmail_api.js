@@ -16,6 +16,56 @@ const encodeDraft = compose(
   rfc5322,
 )
 
+const parsePayload = ({
+  headers, body, mimeType, parts,
+}) => {
+  const getNameAndMail = (value) => {
+    if (!value) return { name: '', mail: '' }
+    const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
+    const mail = value.match(mailRegex)[0] || ''
+    const name = value.replace(mail, '').replace(' <>', '').replace(/"/g, '') || ''
+    return { name, mail }
+  }
+  const findHeader = field => (headers.find(e => e.name === field) || {}).value
+  const from = getNameAndMail(findHeader('From'))
+  const subject = findHeader('Subject') || ''
+
+  const info = { from, subject }
+  switch (mimeType) {
+    case 'text/plain': {
+      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
+      return { content: `<pre>${parsed}</pre>`, ...info }
+    }
+    case 'text/html': {
+      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
+      return { content: parsed, ...info }
+    }
+    case 'multipart/alternative': {
+      const htmlPart = parts.find(part => part.mimeType === 'text/html')
+      const parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
+      return { content: parsed, ...info }
+    }
+    case 'multipart/mixed': {
+      const plainTextPart = parts.find(part => part.mimeType === 'text/html')
+      const htmlPart = parts.find(part => part.mimeType === 'text/html')
+      const alternativePart = parts.find(part => part.mimeType === 'multipart/alternative')
+      let parsed
+      if (plainTextPart) {
+        parsed = new TextDecoder().decode(URLSafeBase64.decode(plainTextPart.body.data))
+        parsed = `<pre>${parsed}</pre>`
+      } else if (htmlPart) {
+        parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
+      } else if (alternativePart) {
+        const contentPart = alternativePart.parts.find(part => part.mimeType === 'text/html')
+        parsed = new TextDecoder().decode(URLSafeBase64.decode(contentPart.body.data))
+      }
+      return { content: parsed, ...info }
+    }
+    default:
+      return null
+  }
+}
+
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
   const { updateMails } = useContext(MailsContext)
@@ -53,7 +103,18 @@ const useGmailAPI = () => {
         result.threads.map(({ id }) => gmailApi.users.threads.get({ userId, id })),
       ))
       .then((responses) => {
-        const threads = responses.map(({ result }) => result)
+        const threads = responses.map(({ result }) => ({
+          ...result,
+          messages: result.messages.map(message => ({
+            id: message.id,
+            internalDate: message.internalDate,
+            snippet: message.snippet,
+            labelIds: message.labelIds,
+            threadId: message.threadId,
+            ...parsePayload(message.payload),
+          })),
+        }))
+
         updateMails({ raw: threads })
       })
   }, [])
