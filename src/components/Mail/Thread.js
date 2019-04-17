@@ -10,7 +10,6 @@ import {
   colors,
 } from '@material-ui/core'
 import Message from 'components/Mail/Message'
-import getSender from 'utils/getSender'
 
 import DeleteIcon from '@material-ui/icons/Delete'
 
@@ -35,11 +34,7 @@ const styles = theme => ({
 const Thread = ({ classes, messages }) => {
   const { trashThread } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
-  const getSubject = useCallback(message => message.payload
-    .headers
-    .find(e => e.name === 'Subject')
-    .value, [])
-  const senders = messages.map(getSender)
+  const senders = messages.map(message => message.from)
   const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
 
   return (
@@ -47,7 +42,7 @@ const Thread = ({ classes, messages }) => {
       <ExpansionPanelSummary classes={{ root: classes.summary, content: classes.summaryContent }}>
         {
           expanded
-            ? <span className={classes.subject}>{ getSubject(messages[0]) }</span>
+            ? <span className={classes.subject}>{ messages[0].subject }</span>
             : (
               <React.Fragment>
                 <div className={classes.sender}>
@@ -64,7 +59,7 @@ const Thread = ({ classes, messages }) => {
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
-                  { getSubject(messages[0]) }
+                  { messages[0].subject }
                   <span className={classes.snippet}>{ ` - ${messages[0].snippet}` }</span>
                 </Typography>
                 <div className={classes.actions}>

@@ -20,7 +20,6 @@ import FlagIcon from '@material-ui/icons/Flag'
 
 import LabelsContext from 'context/labels'
 import Thread from 'components/Mail/Thread'
-import getSender from 'utils/getSender'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
 import { threadSharedStyles } from './styles'
@@ -94,8 +93,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
   const senders = threads
     .map(thread => thread.threads)
     .flat()
-    .map(thread => thread.messages[0])
-    .map(getSender)
+    .map(thread => thread.messages[0].from)
   const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
   const threadCount = Object.values(threads)
     .map(thread => thread.threads.length)
