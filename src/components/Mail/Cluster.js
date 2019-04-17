@@ -97,6 +97,9 @@ const Cluster = ({ classes, labelIds, threads }) => {
     .map(thread => thread.messages[0])
     .map(getSender)
   const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
+  const threadCount = Object.values(threads)
+    .map(thread => thread.threads.length)
+    .reduce((accum, current) => accum + current, 0)
 
   return (
     <ExpansionPanel
@@ -136,12 +139,10 @@ const Cluster = ({ classes, labelIds, threads }) => {
                       { label.type === 'system' ? t(label.id) : label.name }
                     </span>
                     {
-                      threads.length > 1
+                      threadCount > 1
                         ? (
                           <span className={classes.threadCount}>
-(
-                            { threads.length }
-)
+                            {`(${threadCount})`}
                           </span>
                         )
                         : null
