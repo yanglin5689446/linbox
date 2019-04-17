@@ -5,6 +5,7 @@ import {
   Button,
 } from '@material-ui/core'
 import useGoogleAPI from 'utils/hooks/google_api'
+import { useTranslation } from 'react-i18next'
 
 const styles = () => ({
   root: {
@@ -14,15 +15,27 @@ const styles = () => ({
   container: {
     margin: 'auto',
   },
+  signInButton: {
+  },
+  signInText: {
+    paddingLeft: 8,
+  },
 })
 
 const Login = ({ classes }) => {
   const { signIn } = useGoogleAPI()
+  const { t } = useTranslation(['actions'])
   return (
     <div className={classes.root}>
       <div className={classes.container}>
-        <Button onClick={signIn} variant='contained'>
-          Sign in
+        <Button className={classes.signInButton} onClick={signIn} variant='outlined'>
+          <img
+            src='https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg'
+            alt='Google Icon'
+            width={24}
+            height={24}
+          />
+          <span className={classes.signInText}>{ t('SIGN_IN') }</span>
         </Button>
       </div>
     </div>
