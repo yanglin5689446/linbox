@@ -43,7 +43,8 @@ const parsePayload = ({
     case 'multipart/alternative': {
       const htmlPart = parts.find(part => part.mimeType === 'text/html')
       const textPart = parts.find(part => part.mimeType === 'text/plain')
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode((htmlPart || textPart).body.data))
+      const p = (htmlPart || textPart)
+      const parsed = new TextDecoder().decode(URLSafeBase64.decode(p.body.data))
       return { content: parsed, ...info }
     }
     case 'multipart/mixed': {
@@ -63,7 +64,7 @@ const parsePayload = ({
       return { content: parsed, ...info }
     }
     default:
-      return null
+      return info
   }
 }
 
@@ -106,20 +107,17 @@ const useGmailAPI = () => {
       .then((responses) => {
         const threads = responses
           .map(({ result }) => result)
-          .map(thread => {
-            console.log(thread)
-            return ({
-              ...thread,
-              messages: thread.messages.map(message => ({
-                id: message.id,
-                internalDate: message.internalDate,
-                snippet: message.snippet,
-                labelIds: message.labelIds,
-                threadId: message.threadId,
-                ...parsePayload(message.payload),
-              })),
-            })
-        })
+          .map(thread => ({
+            ...thread,
+            messages: thread.messages.map(message => ({
+              id: message.id,
+              internalDate: message.internalDate,
+              snippet: message.snippet,
+              labelIds: message.labelIds,
+              threadId: message.threadId,
+              ...parsePayload(message.payload),
+            })),
+          }))
 
         updateMails({ raw: threads })
       })
