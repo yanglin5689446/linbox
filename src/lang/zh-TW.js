@@ -3,6 +3,7 @@ export default ({
   actions: {
     SEARCH: '搜尋',
     SIGN_OUT: '登出',
+    SIGN_IN: '使用 google 帳號登入',
   },
   sidebar: {
     INBOX: '收件匣',

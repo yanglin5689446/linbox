@@ -42,7 +42,9 @@ const parsePayload = ({
     }
     case 'multipart/alternative': {
       const htmlPart = parts.find(part => part.mimeType === 'text/html')
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
+      const textPart = parts.find(part => part.mimeType === 'text/plain')
+      const p = (htmlPart || textPart)
+      const parsed = new TextDecoder().decode(URLSafeBase64.decode(p.body.data))
       return { content: parsed, ...info }
     }
     case 'multipart/mixed': {
@@ -62,13 +64,13 @@ const parsePayload = ({
       return { content: parsed, ...info }
     }
     default:
-      return null
+      return info
   }
 }
 
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
-  const { updateMails } = useContext(MailsContext)
+  const { setMails } = useContext(MailsContext)
   const { updateLabels } = useContext(LabelsContext)
   const {
     newDraftEdit, updateDraftEdit, closeDraftEdit, updateDrafts,
@@ -103,19 +105,21 @@ const useGmailAPI = () => {
         result.threads.map(({ id }) => gmailApi.users.threads.get({ userId, id })),
       ))
       .then((responses) => {
-        const threads = responses.map(({ result }) => ({
-          ...result,
-          messages: result.messages.map(message => ({
-            id: message.id,
-            internalDate: message.internalDate,
-            snippet: message.snippet,
-            labelIds: message.labelIds,
-            threadId: message.threadId,
-            ...parsePayload(message.payload),
-          })),
-        }))
+        const threads = responses
+          .map(({ result }) => result)
+          .map(thread => ({
+            ...thread,
+            messages: thread.messages.map(message => ({
+              id: message.id,
+              internalDate: message.internalDate,
+              snippet: message.snippet,
+              labelIds: message.labelIds,
+              threadId: message.threadId,
+              ...parsePayload(message.payload),
+            })),
+          }))
 
-        updateMails({ raw: threads })
+        setMails(threads)
       })
   }, [])
 

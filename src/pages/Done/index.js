@@ -1,15 +1,12 @@
 
-import React, { useContext, useCallback } from 'react'
+import React from 'react'
 import {
   withStyles,
 } from '@material-ui/core'
 
 import TimeSlice from 'components/Mail/TimeSlice'
 
-import MailsContext from 'context/mails'
-import LabelsContext from 'context/labels'
-import processThreads from 'utils/processThreads'
-import filterThreadsByLabel from 'utils/filterThreadsByLabel'
+import useProcessedMails from 'utils/hooks/processed_mails'
 
 const styles = () => ({
   container: {
@@ -21,22 +18,13 @@ const styles = () => ({
 })
 
 const Done = ({ classes }) => {
-  const { mails } = useContext(MailsContext)
-  const { labels } = useContext(LabelsContext)
-  const getDoneMails = useCallback(() => {
-    const threads = filterThreadsByLabel(labelIds => !labelIds
-      .some(e => ['INBOX', 'TRASH', 'SPAM']
-        .includes(e)))(mails.raw)
-    return processThreads(threads, labels)
-  }, [mails.raw])
-
-  const doneMails = getDoneMails()
+  const processed = useProcessedMails({ excludes: ['INBOX', 'TRASH', 'SPAM'] })
 
   return (
     <div className={classes.container}>
       {
-        doneMails
-          ? doneMails.map(clusters => (
+        processed
+          ? processed.map(clusters => (
             <TimeSlice
               key={clusters.label}
               clusters={clusters}

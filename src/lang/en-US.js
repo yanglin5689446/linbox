@@ -3,6 +3,7 @@ export default ({
   actions: {
     SEARCH: 'Search',
     SIGN_OUT: 'Sign Out',
+    SIGN_IN: 'Sign in with Google Account',
   },
   sidebar: {
     INBOX: 'Inbox',
