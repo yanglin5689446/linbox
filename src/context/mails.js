@@ -1,20 +1,13 @@
 
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 
 const MailsContext = React.createContext()
 
 export const MailsWrapper = Component => (props) => {
-  const [mails, setMails] = useState({
-    raw: [],
-  })
-
-  const updateMails = useCallback(updates => setMails(prev => ({
-    ...prev,
-    ...updates,
-  })), [])
+  const [mails, setMails] = useState([])
 
   return (
-    <MailsContext.Provider value={{ mails, updateMails }}>
+    <MailsContext.Provider value={{ mails, setMails }}>
       <Component {...props} />
     </MailsContext.Provider>
   )

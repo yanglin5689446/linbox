@@ -70,7 +70,7 @@ const parsePayload = ({
 
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
-  const { updateMails } = useContext(MailsContext)
+  const { setMails } = useContext(MailsContext)
   const { updateLabels } = useContext(LabelsContext)
   const {
     newDraftEdit, updateDraftEdit, closeDraftEdit, updateDrafts,
@@ -119,7 +119,7 @@ const useGmailAPI = () => {
             })),
           }))
 
-        updateMails({ raw: threads })
+        setMails(threads)
       })
   }, [])
 

@@ -24,9 +24,9 @@ const Inbox = ({ classes }) => {
   const { mails } = useContext(MailsContext)
   const { labels } = useContext(LabelsContext)
   const getInboxMails = useCallback(() => {
-    const threads = filterThreadsByLabel(labelIds => labelIds.includes('INBOX'))(mails.raw)
+    const threads = filterThreadsByLabel(labelIds => labelIds.includes('INBOX'))(mails)
     return processThreads(threads, labels)
-  }, [mails.raw])
+  }, [mails])
   const inboxMails = getInboxMails()
 
   return (

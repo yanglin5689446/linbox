@@ -26,9 +26,9 @@ const Done = ({ classes }) => {
   const getDoneMails = useCallback(() => {
     const threads = filterThreadsByLabel(labelIds => !labelIds
       .some(e => ['INBOX', 'TRASH', 'SPAM']
-        .includes(e)))(mails.raw)
+        .includes(e)))(mails)
     return processThreads(threads, labels)
-  }, [mails.raw])
+  }, [mails])
 
   const doneMails = getDoneMails()
 
