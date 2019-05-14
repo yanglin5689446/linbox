@@ -53,6 +53,9 @@ export const threadSharedStyles = theme => ({
       opacity: 1,
     },
   },
+  unread: {
+    fontWeight: 600,
+  },
 })
 
 export default {

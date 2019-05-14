@@ -89,15 +89,31 @@ const Cluster = ({ classes, labelIds, threads }) => {
   })
   const label = getLabel(labelIds)
   const { t } = useTranslation(['labels', 'date'])
-
-  const senders = threads
-    .map(thread => thread.threads)
-    .flat()
-    .map(thread => thread.messages[0].from)
   const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
   const threadCount = Object.values(threads)
     .map(thread => thread.threads.length)
     .reduce((accum, current) => accum + current, 0)
+  const senderUnreadMap = threads
+    .map(thread => thread.threads)
+    .flat()
+    .map(thread => ({ from: thread.messages[0].from, unread: thread.hasUnread }))
+    .reduce((accum, current) => {
+      const n = getSenderName(current.from)
+      accum[n] = accum[n] || current.unread // eslint-disable-line
+      return accum
+    }, {})
+  const senderUnreadList = Object.entries(senderUnreadMap)
+
+  const hasUnread = senderUnreadList.some(entries => entries[0])
+
+  const isLastSender = index => index === senderUnreadList.length - 1
+  const clusterTitle = senderUnreadList
+    .map(([name, unread], index) => (
+      <span key={name} className={unread ? classes.unread : ''}>
+        {name}
+        {isLastSender(index) || ', '}
+      </span>
+    ))
 
   return (
     <ExpansionPanel
@@ -132,7 +148,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
                         : label.name[0]
                     }
                   </Avatar>
-                  <Typography className={classes.name}>
+                  <Typography className={classNames(classes.name, hasUnread && classes.unread)}>
                     <span className={label.type === 'system' ? classes[getLabelClass(label)] : null}>
                       { label.type === 'system' ? t(label.id) : label.name }
                     </span>
@@ -149,7 +165,9 @@ const Cluster = ({ classes, labelIds, threads }) => {
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
-                  { [...new Set(senders.map(getSenderName))].join(', ') }
+                  <span className={hasUnread ? classes.unread : ''}>
+                    { clusterTitle }
+                  </span>
                 </Typography>
                 <div className={classes.actions}>
                   <DeleteIcon

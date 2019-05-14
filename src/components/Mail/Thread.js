@@ -10,7 +10,6 @@ import {
   colors,
 } from '@material-ui/core'
 import Message from 'components/Mail/Message'
-
 import DeleteIcon from '@material-ui/icons/Delete'
 
 import useGmailAPI from 'utils/hooks/gmail_api'
@@ -31,11 +30,25 @@ const styles = theme => ({
   },
 })
 
-const Thread = ({ classes, messages }) => {
+const Thread = ({ classes, messages, hasUnread }) => {
   const { trashThread } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
-  const senders = messages.map(message => message.from)
   const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
+  const senderUnreadMap = messages.reduce((accum, current) => {
+    const n = getSenderName(current.from)
+    accum[n] = accum[n] || current.unread //eslint-disable-line
+    return accum
+  }, {})
+  const firstSenderName = getSenderName(messages[0].from)
+  const senderUnreadList = Object.entries(senderUnreadMap)
+  const isLastSender = index => index === senderUnreadList.length - 1
+  const threadTitle = senderUnreadList
+    .map(([name, unread], index) => (
+      <span key={name} className={unread ? classes.unread : ''}>
+        {name}
+        {isLastSender(index) || ', '}
+      </span>
+    ))
 
   return (
     <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
@@ -50,16 +63,16 @@ const Thread = ({ classes, messages }) => {
                     alt=''
                     className={classes.avatar}
                   >
-                    { getSenderName(senders[0])[0] }
+                    { firstSenderName[0] }
                   </Avatar>
                   <Typography className={classes.name}>
-                    {
-                      [...new Set(senders.map(getSenderName))].join(', ')
-                    }
+                    { threadTitle }
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
-                  { messages[0].subject }
+                  <span className={hasUnread ? classes.unread : ''}>
+                    { messages[0].subject }
+                  </span>
                   <span className={classes.snippet}>{ ` - ${messages[0].snippet}` }</span>
                 </Typography>
                 <div className={classes.actions}>
