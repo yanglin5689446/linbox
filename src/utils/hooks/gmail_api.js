@@ -1,76 +1,16 @@
 
 import { useContext, useCallback } from 'react'
-import URLSafeBase64 from 'urlsafe-base64'
 
 import UserContext from 'context/user'
 import MailsContext from 'context/mails'
 import DraftsContext from 'context/drafts'
 import LabelsContext from 'context/labels'
 import useGoogleAPI from 'utils/hooks/google_api'
-import compose from 'utils/compose'
-import rfc5322 from 'utils/rfc5322'
-
-const encodeDraft = compose(
-  URLSafeBase64.encode,
-  Buffer.from,
-  rfc5322,
-)
-
-const parsePayload = ({
-  headers, body, mimeType, parts,
-}) => {
-  const getNameAndMail = (value) => {
-    if (!value) return { name: '', mail: '' }
-    const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
-    const mail = value.match(mailRegex)[0] || ''
-    const name = value.replace(mail, '').replace(' <>', '').replace(/"/g, '') || ''
-    return { name, mail }
-  }
-  const findHeader = field => (headers.find(e => e.name === field) || {}).value
-  const from = getNameAndMail(findHeader('From'))
-  const subject = findHeader('Subject') || ''
-
-  const info = { from, subject }
-  switch (mimeType) {
-    case 'text/plain': {
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
-      return { content: `<pre>${parsed}</pre>`, ...info }
-    }
-    case 'text/html': {
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
-      return { content: parsed, ...info }
-    }
-    case 'multipart/alternative': {
-      const htmlPart = parts.find(part => part.mimeType === 'text/html')
-      const textPart = parts.find(part => part.mimeType === 'text/plain')
-      const p = (htmlPart || textPart)
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(p.body.data))
-      return { content: parsed, ...info }
-    }
-    case 'multipart/mixed': {
-      const plainTextPart = parts.find(part => part.mimeType === 'text/html')
-      const htmlPart = parts.find(part => part.mimeType === 'text/html')
-      const alternativePart = parts.find(part => part.mimeType === 'multipart/alternative')
-      let parsed
-      if (plainTextPart) {
-        parsed = new TextDecoder().decode(URLSafeBase64.decode(plainTextPart.body.data))
-        parsed = `<pre>${parsed}</pre>`
-      } else if (htmlPart) {
-        parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
-      } else if (alternativePart) {
-        const contentPart = alternativePart.parts.find(part => part.mimeType === 'text/html')
-        parsed = new TextDecoder().decode(URLSafeBase64.decode(contentPart.body.data))
-      }
-      return { content: parsed, ...info }
-    }
-    default:
-      return info
-  }
-}
+import encode from 'utils/mails/encode'
 
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
-  const { setMails } = useContext(MailsContext)
+  const { removeMessage, removeThread, setMails } = useContext(MailsContext)
   const { updateLabels } = useContext(LabelsContext)
   const {
     newDraftEdit, updateDraftEdit, closeDraftEdit, updateDrafts,
@@ -105,22 +45,18 @@ const useGmailAPI = () => {
         result.threads.map(({ id }) => gmailApi.users.threads.get({ userId, id })),
       ))
       .then((responses) => {
-        const threads = responses
-          .map(({ result }) => result)
-          .map(thread => ({
-            ...thread,
-            messages: thread.messages.map(message => ({
-              id: message.id,
-              internalDate: message.internalDate,
-              snippet: message.snippet,
-              labelIds: message.labelIds,
-              threadId: message.threadId,
-              ...parsePayload(message.payload),
-            })),
-          }))
-
+        const threads = responses.map(({ result }) => result)
         setMails(threads)
       })
+  }, [])
+
+  const modifyMessage = useCallback(({ id, add, remove }) => {
+    const userId = user.emailAddresses[0].value
+    gmailApi.users.messages
+      .modify({
+        id, userId, addLabelIds: add, removeLabelIds: remove,
+      })
+      .execute()
   }, [])
 
   const loadDrafts = useCallback(() => {
@@ -138,17 +74,17 @@ const useGmailAPI = () => {
 
   const trashDraft = useCallback((id) => {
     const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
-    gmailApi.users.threads.trash({ userId, id }).then(loadDrafts)
+    removeThread(id)
+    gmailApi.users.threads.trash({ userId, id })
   }, [])
-  const trashMessage = useCallback((id) => {
+  const trashMessage = useCallback(({ id, threadId }) => {
     const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
+    removeMessage({ id, threadId })
     gmailApi.users.messages.trash({ userId, id }).then(loadMails)
   }, [])
   const trashThread = useCallback((id) => {
     const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
+    removeThread(id)
     gmailApi.users.threads.trash({ userId, id }).then(loadMails)
   }, [])
 
@@ -167,7 +103,7 @@ const useGmailAPI = () => {
     await gmailApi.users.drafts.update({
       id: draft.id,
       userId,
-      message: { raw: encodeDraft(draft) },
+      message: { raw: encode(draft) },
     })
   }, [])
   const sendDraft = useCallback((id) => {
@@ -186,6 +122,7 @@ const useGmailAPI = () => {
     trashDraft,
     trashThread,
     trashMessage,
+    modifyMessage,
     loadDrafts,
     createDraft,
     updateDraft,

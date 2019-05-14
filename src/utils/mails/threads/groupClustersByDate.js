@@ -2,34 +2,7 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
-import compose from 'utils/compose'
-
 dayjs.extend(relativeTime)
-
-// clusterize threads by same label
-// threads with same label are clusterized to one cluster,
-// threads with personal lable are not included.
-// so the return type is [(cluster | thread)]
-// @todo: inlcudes user defined cluster
-const clusterize = (threads, labels) => {
-  const result = []
-  threads.forEach((thread) => {
-    const latestMessage = thread.messages[0]
-    const foundLabel = labels.user.find(e => latestMessage.labelIds.includes(e.id))
-      || labels.category.find(e => latestMessage.labelIds.includes(e.id))
-    if (foundLabel) {
-      const index = result.findIndex(e => e.labelIds && e.labelIds.includes(foundLabel.id))
-      if (index === -1) {
-        result.push({ labelIds: latestMessage.labelIds, threads: [thread] })
-      } else {
-        result[index].threads.push(thread)
-      }
-    } else if (latestMessage.labelIds.includes('CATEGORY_PERSONAL')) {
-      result.push(thread)
-    }
-  })
-  return result
-}
 
 const pushOrNew = (array, value, label) => {
   const last = array.length ? array[array.length - 1] : null
@@ -38,7 +11,7 @@ const pushOrNew = (array, value, label) => {
   } else last.threads.push(value)
 }
 
-const categorizeByDate = (result, date, value) => {
+const categorize = (result, date, value) => {
   if (date > dayjs().startOf('day')) {
     pushOrNew(result, value, 'TODAY')
   } else if (date > dayjs().startOf('day').subtract(1, 'day')) {
@@ -58,34 +31,29 @@ const categorizeByDate = (result, date, value) => {
   }
 }
 
-const categorizeClusterByDate = (cluster) => {
+const groupThreadsByDate = (cluster) => {
   const threads = []
   cluster.threads.forEach((thread) => {
     const date = dayjs(parseInt(thread.messages[0].internalDate, 10))
-    categorizeByDate(threads, date, thread)
+    categorize(threads, date, thread)
   })
   const result = { ...cluster, threads }
   return result
 }
 
-const categorizeClusterizedByDate = (clusterized) => {
+const groupClustersByDate = (clusterized) => {
   const result = []
   clusterized.forEach((clusterOrThread) => {
     const cluster = clusterOrThread.id
       ? clusterOrThread
-      : categorizeClusterByDate(clusterOrThread)
+      : groupThreadsByDate(clusterOrThread)
     const internalDate = clusterOrThread.id
       ? clusterOrThread.messages[0].internalDate
       : clusterOrThread.threads[0].messages[0].internalDate
     const date = dayjs(parseInt(internalDate, 10))
-    categorizeByDate(result, date, cluster)
+    categorize(result, date, cluster)
   })
   return result
 }
 
-const processThreads = compose(
-  categorizeClusterizedByDate,
-  clusterize,
-)
-
-export default processThreads
+export default groupClustersByDate

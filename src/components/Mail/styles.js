@@ -29,6 +29,7 @@ export const threadSharedStyles = theme => ({
     textOverflow: 'ellipsis',
     paddingLeft: 16,
     paddingRight: 16,
+    letterSpacing: 0.2,
   },
   brief: {
     flex: 6,
@@ -36,6 +37,7 @@ export const threadSharedStyles = theme => ({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
     overflow: 'hidden',
+    letterSpacing: 0.2,
   },
   actions: {
     padding: '0 !important',
@@ -52,6 +54,9 @@ export const threadSharedStyles = theme => ({
     '&:hover': {
       opacity: 1,
     },
+  },
+  unread: {
+    fontWeight: 600,
   },
 })
 
