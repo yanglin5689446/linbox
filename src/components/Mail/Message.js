@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
   withStyles,
   Card,
@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 
+import MailsContext from 'context/mails'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
 const styles = () => ({
@@ -53,10 +54,17 @@ const styles = () => ({
 })
 
 const Message = ({
-  classes, id, from, snippet, content, initialExpand,
+  classes, threadId, id, from, snippet, content, initialExpand, unread,
 }) => {
-  const { trashMessage } = useGmailAPI()
+  const { markMessageAsRead } = useContext(MailsContext)
+  const { modifyMessage, trashMessage } = useGmailAPI()
   const [expanded, setExpanded] = useState(initialExpand)
+  useEffect(() => {
+    if (expanded && unread) {
+      modifyMessage({ id, remove: ['UNREAD'] })
+      markMessageAsRead({ threadId, id })
+    }
+  }, [unread, expanded])
   return (
     <Card
       onClick={() => setExpanded(exp => !exp)}

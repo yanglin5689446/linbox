@@ -104,7 +104,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
     }, {})
   const senderUnreadList = Object.entries(senderUnreadMap)
 
-  const hasUnread = senderUnreadList.some(entries => entries[0])
+  const hasUnread = senderUnreadList.some(entries => entries[1])
 
   const isLastSender = index => index === senderUnreadList.length - 1
   const clusterTitle = senderUnreadList
@@ -165,7 +165,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
                   </Typography>
                 </div>
                 <Typography className={classes.brief}>
-                  <span className={hasUnread ? classes.unread : ''}>
+                  <span>
                     { clusterTitle }
                   </span>
                 </Typography>
