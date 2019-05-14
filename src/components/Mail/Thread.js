@@ -20,7 +20,7 @@ import { threadSharedStyles } from './styles'
 const styles = theme => ({
   ...threadSharedStyles(theme),
   snippet: {
-    color: colors.grey[700],
+    color: colors.grey[500],
   },
   subject: {
     color: colors.grey[800],

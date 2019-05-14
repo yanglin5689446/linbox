@@ -41,6 +41,7 @@ const styles = () => ({
   },
   body: {
     padding: 4,
+    width: '100%',
   },
   snippet: {
     whiteSpace: 'nowrap',
