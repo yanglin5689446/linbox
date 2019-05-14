@@ -84,7 +84,7 @@ const Message = ({
               <DeleteIcon
                 className={classes.actionIcon}
                 onClick={(e) => {
-                  trashMessage(id)
+                  trashMessage({ id, threadId })
                   e.stopPropagation()
                 }}
               />

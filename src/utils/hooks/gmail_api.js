@@ -10,7 +10,7 @@ import encode from 'utils/mails/encode'
 
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
-  const { setMails } = useContext(MailsContext)
+  const { removeMessage, removeThread, setMails } = useContext(MailsContext)
   const { updateLabels } = useContext(LabelsContext)
   const {
     newDraftEdit, updateDraftEdit, closeDraftEdit, updateDrafts,
@@ -74,17 +74,17 @@ const useGmailAPI = () => {
 
   const trashDraft = useCallback((id) => {
     const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
-    gmailApi.users.threads.trash({ userId, id }).then(loadDrafts)
+    removeThread(id)
+    gmailApi.users.threads.trash({ userId, id })
   }, [])
-  const trashMessage = useCallback((id) => {
+  const trashMessage = useCallback(({ id, threadId }) => {
     const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
+    removeMessage({ id, threadId })
     gmailApi.users.messages.trash({ userId, id }).then(loadMails)
   }, [])
   const trashThread = useCallback((id) => {
     const userId = user.emailAddresses[0].value
-    // @todo: optimize this so that it won't reload after every deletion
+    removeThread(id)
     gmailApi.users.threads.trash({ userId, id }).then(loadMails)
   }, [])
 
