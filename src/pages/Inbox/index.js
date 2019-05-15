@@ -28,7 +28,7 @@ const styles = () => ({
 })
 
 const Inbox = ({ classes }) => {
-  const processed = useProcessedMails({ includes: ['INBOX'] })
+  const processed = useProcessedMails({ includes: ['INBOX', 'SENT'] })
   const { loadMails } = useGmailAPI()
 
   return (
