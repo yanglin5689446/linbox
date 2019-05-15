@@ -5,7 +5,8 @@ const getNameAndMail = (value) => {
   if (!value) return { name: '', mail: '' }
   const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
   const mail = value.match(mailRegex)[0] || ''
-  const name = value.replace(mail, '').replace(' <>', '').replace(/"/g, '') || ''
+  const name = value.replace(mail, '').replace('<>', '').trim().replace(/"/g, '')
+    || mail.split('@')[0]
   return { name, mail }
 }
 

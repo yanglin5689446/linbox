@@ -44,7 +44,6 @@ const styles = theme => ({
 const Thread = ({ classes, messages, hasUnread }) => {
   const { trashThread } = useGmailAPI()
   const [expanded, setExpanded] = useState(false)
-  const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
   const mimeTypeIcon = useCallback((type) => {
     switch (type) {
       case 'image/jpg':
@@ -56,11 +55,11 @@ const Thread = ({ classes, messages, hasUnread }) => {
 
 
   const senderUnreadMap = messages.reduce((accum, current) => {
-    const n = getSenderName(current.from)
+    const n = current.from.name
     accum[n] = accum[n] || current.unread //eslint-disable-line
     return accum
   }, {})
-  const firstSenderName = getSenderName(messages[0].from)
+  const firstSenderName = messages[0].from.name
   const senderUnreadList = Object.entries(senderUnreadMap)
   const isLastSender = index => index === senderUnreadList.length - 1
   const threadTitle = senderUnreadList

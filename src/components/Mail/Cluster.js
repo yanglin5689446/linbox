@@ -89,7 +89,6 @@ const Cluster = ({ classes, labelIds, threads }) => {
   })
   const label = getLabel(labelIds)
   const { t } = useTranslation(['labels', 'date'])
-  const getSenderName = useCallback(({ name, mail }) => name || mail.split('@')[0])
   const threadCount = Object.values(threads)
     .map(thread => thread.threads.length)
     .reduce((accum, current) => accum + current, 0)
@@ -98,7 +97,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
     .flat()
     .map(thread => ({ from: thread.messages[0].from, unread: thread.hasUnread }))
     .reduce((accum, current) => {
-      const n = getSenderName(current.from)
+      const n = current.from.name
       accum[n] = accum[n] || current.unread // eslint-disable-line
       return accum
     }, {})
