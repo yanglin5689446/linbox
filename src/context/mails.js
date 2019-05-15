@@ -7,7 +7,8 @@ const actions = {
   setMails: 'SET_MAILS',
   removeMessage: 'REMOVE_MESSAGE',
   removeThread: 'REMOVE_THREAD',
-  markMessageAsRead: 'MARK_MESSAGE_AS_READ',
+  removeMessageLabel: 'REMOVE_MESSAGE_LABEL',
+  removeThreadLabel: 'REMOVE_THREAD_LABEL',
 }
 
 const reducer = (state, action) => {
@@ -15,8 +16,8 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'SET_MAILS':
       return payload
-    case 'MARK_MESSAGE_AS_READ': {
-      const { threadId, id } = payload
+    case 'REMOVE_MESSAGE_LABEL': {
+      const { threadId, id, label } = payload
       const index = state.findIndex(thread => thread.id === threadId)
       const thread = state[index]
       const updated = {
@@ -26,7 +27,7 @@ const reducer = (state, action) => {
             ? message
             : ({
               ...message,
-              labelIds: message.labelIds.filter(labelId => labelId !== 'UNREAD'),
+              labelIds: message.labelIds.filter(labelId => labelId !== label),
             }))),
       }
       return [
@@ -35,6 +36,26 @@ const reducer = (state, action) => {
         ...state.slice(index + 1),
       ]
     }
+
+    case 'REMOVE_THREAD_LABEL': {
+      const { id, label } = payload
+      const index = state.findIndex(thread => thread.id === id)
+      const thread = state[index]
+      const updated = {
+        ...thread,
+        messages: thread.messages
+          .map(message => ({
+            ...message,
+            labelIds: message.labelIds.filter(labelId => labelId !== label),
+          })),
+      }
+      return [
+        ...state.slice(0, index),
+        updated,
+        ...state.slice(index + 1),
+      ]
+    }
+
     case 'REMOVE_MESSAGE': {
       const { threadId, id } = payload
       const index = state.findIndex(thread => thread.id === threadId)
@@ -80,14 +101,24 @@ export const MailsWrapper = Component => (props) => {
     payload,
   }), [])
 
-  const markMessageAsRead = useCallback(payload => dispatch({
-    type: actions.markMessageAsRead,
+  const removeMessageLabel = useCallback(payload => dispatch({
+    type: actions.removeMessageLabel,
+    payload,
+  }), [])
+
+  const removeThreadLabel = useCallback(payload => dispatch({
+    type: actions.removeThreadLabel,
     payload,
   }), [])
 
   return (
     <MailsContext.Provider value={{
-      markMessageAsRead, removeMessage, removeThread, mails, setMails,
+      removeMessageLabel,
+      removeThreadLabel,
+      removeMessage,
+      removeThread,
+      mails,
+      setMails,
     }}
     >
       <Component {...props} />

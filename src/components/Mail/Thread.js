@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext } from 'react'
 import {
   withStyles,
   ExpansionPanel,
@@ -12,12 +12,14 @@ import {
 } from '@material-ui/core'
 import Message from 'components/Mail/Message'
 import DeleteIcon from '@material-ui/icons/Delete'
+import CheckIcon from '@material-ui/icons/Check'
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile'
 import InsertPhotoIcon from '@material-ui/icons/InsertPhoto'
 
 import useGmailAPI from 'utils/hooks/gmail_api'
 
 import { threadSharedStyles } from './styles'
+import MailsContext from '../../context/mails'
 
 const styles = theme => ({
   ...threadSharedStyles(theme),
@@ -42,8 +44,10 @@ const styles = theme => ({
 
 
 const Thread = ({ classes, messages, hasUnread }) => {
-  const { trashThread } = useGmailAPI()
+  const { trashThread, batchModifyMessages } = useGmailAPI()
+  const { removeThreadLabel } = useContext(MailsContext)
   const [expanded, setExpanded] = useState(false)
+
   const mimeTypeIcon = useCallback((type) => {
     switch (type) {
       case 'image/jpg':
@@ -120,6 +124,17 @@ const Thread = ({ classes, messages, hasUnread }) => {
                 </Typography>
 
                 <div className={classes.actions}>
+                  <CheckIcon
+                    className={classes.actionIcon}
+                    onClick={(e) => {
+                      removeThreadLabel({ id: messages[0].threadId, label: 'INBOX' })
+                      batchModifyMessages({
+                        ids: messages.map(({ id }) => id),
+                        remove: ['INBOX'],
+                      })
+                      e.stopPropagation()
+                    }}
+                  />
                   <DeleteIcon
                     className={classes.actionIcon}
                     onClick={(e) => {
