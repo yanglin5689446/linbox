@@ -59,6 +59,16 @@ const useGmailAPI = () => {
       .execute()
   }, [])
 
+  const batchModifyMessages = useCallback(({ ids, add, remove }) => {
+    const userId = user.emailAddresses[0].value
+    gmailApi.users.messages
+      .batchModify({
+        ids, userId, addLabelIds: add, removeLabelIds: remove,
+      })
+      .execute()
+  }, [])
+
+
   const loadDrafts = useCallback(() => {
     const userId = user.emailAddresses[0].value
     gmailApi.users.drafts.list({ userId })
@@ -123,6 +133,7 @@ const useGmailAPI = () => {
     trashThread,
     trashMessage,
     modifyMessage,
+    batchModifyMessages,
     loadDrafts,
     createDraft,
     updateDraft,

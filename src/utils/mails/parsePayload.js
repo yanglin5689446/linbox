@@ -1,21 +1,40 @@
 
 import URLSafeBase64 from 'urlsafe-base64'
 
+const getNameAndMail = (value) => {
+  if (!value) return { name: '', mail: '' }
+  const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
+  const mail = value.match(mailRegex)[0] || ''
+  const name = value.replace(mail, '').replace('<>', '').trim().replace(/"/g, '')
+    || mail.split('@')[0]
+  return { name, mail }
+}
+
+
+const fileMimeType = [
+  'application/pdf',
+  'image/jpg',
+]
+
 const parsePayload = ({
-  headers, body, mimeType, parts,
+  headers, body, mimeType, parts = [],
 }) => {
-  const getNameAndMail = (value) => {
-    if (!value) return { name: '', mail: '' }
-    const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
-    const mail = value.match(mailRegex)[0] || ''
-    const name = value.replace(mail, '').replace(' <>', '').replace(/"/g, '') || ''
-    return { name, mail }
-  }
   const findHeader = field => (headers.find(e => e.name === field) || {}).value
+
   const from = getNameAndMail(findHeader('From'))
   const subject = findHeader('Subject') || ''
 
-  const info = { from, subject }
+  const attachments = []
+  parts.forEach((part) => {
+    if (fileMimeType.includes(part.mimeType)) {
+      attachments.push({
+        name: part.filename,
+        id: part.body.attachmentId,
+      })
+    }
+  })
+
+  const info = { from, subject, attachments }
   switch (mimeType) {
     case 'text/plain': {
       const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))

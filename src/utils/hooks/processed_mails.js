@@ -8,11 +8,6 @@ import extract from 'utils/mails/threads/extract'
 import clusterize from 'utils/mails/threads/clusterize'
 import groupClustersByDate from 'utils/mails/threads/groupClustersByDate'
 
-const reverseMessagesOrder = thread => ({
-  ...thread,
-  messages: thread.messages.slice().reverse(),
-})
-
 const map = func => array => array.map(func)
 
 const useProcessedMails = ({ includes, excludes }) => {
@@ -21,7 +16,6 @@ const useProcessedMails = ({ includes, excludes }) => {
   const process = useCallback(compose(
     groupClustersByDate,
     clusterize(labels),
-    map(reverseMessagesOrder),
     filterByLabel({ includes, excludes }),
     map(extract),
   ), [mails])

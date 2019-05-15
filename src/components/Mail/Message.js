@@ -56,13 +56,13 @@ const styles = () => ({
 const Message = ({
   classes, threadId, id, from, snippet, content, initialExpand, unread,
 }) => {
-  const { markMessageAsRead } = useContext(MailsContext)
+  const { removeMessageLabel } = useContext(MailsContext)
   const { modifyMessage, trashMessage } = useGmailAPI()
   const [expanded, setExpanded] = useState(initialExpand)
   useEffect(() => {
     if (expanded && unread) {
       modifyMessage({ id, remove: ['UNREAD'] })
-      markMessageAsRead({ threadId, id })
+      removeMessageLabel({ threadId, id, label: 'UNREAD' })
     }
   }, [unread, expanded])
   return (
