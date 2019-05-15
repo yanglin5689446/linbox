@@ -64,11 +64,10 @@ const SideBar = ({ classes, open }) => {
           <Divider className={classes.divider} />
 
           {
-            labels.user
-              ? labels.user
-                .filter(label => label.type === 'user')
-                .map(label => <Tab key={label.id} icon={<EmailIcon />} text={label.name} />)
-              : null
+            !!labels.user
+            && labels.user
+              .filter(label => label.type === 'user')
+              .map(label => <Tab key={label.id} icon={<EmailIcon />} text={label.name} />)
           }
 
           <Divider className={classes.divider} />

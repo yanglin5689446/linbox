@@ -156,12 +156,11 @@ const Cluster = ({ classes, labelIds, threads }) => {
                     </span>
                     {
                       threadCount > 1
-                        ? (
-                          <span className={classes.threadCount}>
-                            {`(${threadCount})`}
-                          </span>
-                        )
-                        : null
+                      && (
+                      <span className={classes.threadCount}>
+                        {`(${threadCount})`}
+                      </span>
+                      )
                     }
 
                   </Typography>
