@@ -1,5 +1,7 @@
 
-import React, { useState, useEffect, useContext } from 'react'
+import React, {
+  useState, useEffect, useContext, useMemo,
+} from 'react'
 import {
   withStyles,
   Card,
@@ -43,6 +45,7 @@ const styles = () => ({
   body: {
     padding: 4,
     width: '100%',
+    maxWidth: '100%',
   },
   snippet: {
     whiteSpace: 'nowrap',
@@ -52,6 +55,21 @@ const styles = () => ({
     width: 'calc(70vw - 32px - 12px * 2 - 20px)',
   },
 })
+
+const processHTMLContent = (raw) => {
+  const parser = new DOMParser()
+  const serializer = new XMLSerializer()
+  const doc = parser.parseFromString(raw, 'text/html')
+  // add target='_blank' to all links
+  const links = Array.from(doc.getElementsByTagName('a'))
+  links.forEach(link => link.setAttribute('target', '_blank'))
+  // add target='_blank' to all areas
+  const areas = Array.from(doc.getElementsByTagName('area'))
+  areas.forEach(link => link.setAttribute('target', '_blank'))
+  return {
+    content: serializer.serializeToString(doc),
+  }
+}
 
 const Message = ({
   classes, threadId, id, from, snippet, content, initialExpand, unread,
@@ -65,6 +83,7 @@ const Message = ({
       removeMessageLabel({ threadId, id, label: 'UNREAD' })
     }
   }, [unread, expanded])
+  const cooked = useMemo(() => processHTMLContent(content), [content])
   return (
     <Card
       onClick={() => setExpanded(exp => !exp)}
@@ -92,7 +111,7 @@ const Message = ({
           </div>
           {
             expanded
-              ? <div dangerouslySetInnerHTML={{ __html: content }} />
+              ? <div dangerouslySetInnerHTML={{ __html: cooked.content }} />
               : <div className={classes.snippet}>{ snippet }</div>
           }
         </div>
