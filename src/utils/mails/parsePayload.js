@@ -36,13 +36,13 @@ const parsePayload = ({
 
   const info = { from, subject, attachments }
   switch (mimeType) {
-    case 'text/plain': {
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
-      return { content: `<pre>${parsed}</pre>`, ...info }
-    }
     case 'text/html': {
       const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
       return { content: parsed, ...info }
+    }
+    case 'text/plain': {
+      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
+      return { content: `<pre>${parsed}</pre>`, ...info }
     }
     case 'multipart/alternative': {
       const htmlPart = parts.find(part => part.mimeType === 'text/html')
@@ -56,11 +56,11 @@ const parsePayload = ({
       const htmlPart = parts.find(part => part.mimeType === 'text/html')
       const alternativePart = parts.find(part => part.mimeType === 'multipart/alternative')
       let parsed
-      if (plainTextPart) {
+      if (htmlPart) {
+        parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
+      } else if (plainTextPart) {
         parsed = new TextDecoder().decode(URLSafeBase64.decode(plainTextPart.body.data))
         parsed = `<pre>${parsed}</pre>`
-      } else if (htmlPart) {
-        parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
       } else if (alternativePart) {
         const contentPart = alternativePart.parts.find(part => part.mimeType === 'text/html')
         parsed = new TextDecoder().decode(URLSafeBase64.decode(contentPart.body.data))
