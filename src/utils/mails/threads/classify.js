@@ -10,14 +10,15 @@
 const classify = labels => (threads) => {
   const result = []
   threads.forEach((thread) => {
-    if (labels.category.includes(thread.primaryLabel)) {
-      const index = result.findIndex(e => e.primaryLabel && e.primaryLabel === thread.primaryLabel)
+    const { primaryLabel } = thread
+    if (labels.category.includes(primaryLabel) || labels.user.includes(primaryLabel)) {
+      const index = result.findIndex(e => e.primaryLabel && e.primaryLabel === primaryLabel)
       if (index === -1) {
-        result.push({ primaryLabel: thread.primaryLabel, threads: [thread] })
+        result.push({ primaryLabel, threads: [thread] })
       } else {
         result[index].threads.push(thread)
       }
-    } else if (thread.primaryLabel === labels.personal) {
+    } else if (primaryLabel === labels.personal) {
       result.push(thread)
     }
   })
