@@ -24,14 +24,16 @@ const useGmailAPI = () => {
       .then(({ result }) => {
         const systemAll = result.labels.filter(label => label.type === 'system')
         const category = systemAll
-          .filter(label => label.id.startsWith('CATEGORY') && !label.id.endsWith('PERSONAL'))
-        const system = result.labels.filter(label => label.type === 'system')
-          .filter(label => !label.id.startsWith('CATEGORY') || label.id.endsWith('PERSONAL'))
+          .filter(label => label.id.startsWith('CATEGORY'))
+          .filter(label => !label.id.endsWith('PERSONAL'))
+        const system = systemAll.filter(label => !label.id.startsWith('CATEGORY'))
         const userLabels = result.labels.filter(label => label.type === 'user')
+        const personal = systemAll.find(label => label.id === 'CATEGORY_PERSONAL')
 
         const labels = {
           category,
           system,
+          personal,
           user: userLabels,
         }
         updateLabels(labels)
