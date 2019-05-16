@@ -7,6 +7,7 @@
     "@material-ui/icons": "^3.0.2",
     "babel-loader": "^8.0.5",
     "classnames": "^2.2.6",
+    "css": "^2.2.4",
     "dayjs": "^1.8.12",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-loader": "^2.1.2",
@@ -26,7 +27,8 @@
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "react-select": "^2.4.3",
-    "urlsafe-base64": "^1.0.0"
+    "urlsafe-base64": "^1.0.0",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "react-app-rewired start",

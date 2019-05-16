@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import {
   withStyles,
   ExpansionPanel,
@@ -19,7 +19,6 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
 import FlagIcon from '@material-ui/icons/Flag'
 import CheckIcon from '@material-ui/icons/Check'
 
-import LabelsContext from 'context/labels'
 import Thread from 'components/Mail/Thread'
 import useGmailAPI from 'utils/hooks/gmail_api'
 import MailsContext from '../../context/mails'
@@ -80,17 +79,10 @@ const getLabelIcon = (label) => {
 
 const getLabelClass = label => label.id.split('_')[1].toLowerCase()
 
-const Cluster = ({ classes, labelIds, threads }) => {
+const Cluster = ({ classes, primaryLabel, threads }) => {
   const { trashThread, batchModifyMessages } = useGmailAPI()
   const { removeThreadLabel } = useContext(MailsContext)
-  const { labels } = useContext(LabelsContext)
   const [expanded, setExpanded] = useState(false)
-  const getLabel = useCallback((ids) => {
-    let label = labels.user.find(l => ids.includes(l.id))
-    if (!label)label = labels.category.find(l => ids.includes(l.id))
-    return label
-  })
-  const label = getLabel(labelIds)
   const { t } = useTranslation(['labels', 'date'])
   const threadCount = Object.values(threads)
     .map(thread => thread.threads.length)
@@ -128,7 +120,7 @@ const Cluster = ({ classes, labelIds, threads }) => {
           expanded
             ? (
               <Typography variant='h5' classes={{ h5: classes.label }}>
-                { label.type === 'system' ? t(label.id) : label.name }
+                { primaryLabel.type === 'system' ? t(primaryLabel.id) : primaryLabel.name }
               </Typography>
             )
             : (
@@ -139,29 +131,28 @@ const Cluster = ({ classes, labelIds, threads }) => {
                     className={
                       classNames(
                         classes.avatar,
-                        label.type === 'system' && classes.systemLabels,
-                        label.type === 'system' && classes[getLabelClass(label)],
+                        primaryLabel.type === 'system' && classes.systemLabels,
+                        primaryLabel.type === 'system' && classes[getLabelClass(primaryLabel)],
                       )
                     }
                   >
                     {
-                      label.type === 'system'
-                        ? getLabelIcon(label)
-                        : label.name[0]
+                      primaryLabel.type === 'system'
+                        ? getLabelIcon(primaryLabel)
+                        : primaryLabel.name[0]
                     }
                   </Avatar>
                   <Typography className={classNames(classes.name, hasUnread && classes.unread)}>
-                    <span className={label.type === 'system' ? classes[getLabelClass(label)] : null}>
-                      { label.type === 'system' ? t(label.id) : label.name }
+                    <span className={primaryLabel.type === 'system' ? classes[getLabelClass(primaryLabel)] : null}>
+                      { primaryLabel.type === 'system' ? t(primaryLabel.id) : primaryLabel.name }
                     </span>
                     {
                       threadCount > 1
-                        ? (
-                          <span className={classes.threadCount}>
-                            {`(${threadCount})`}
-                          </span>
-                        )
-                        : null
+                      && (
+                      <span className={classes.threadCount}>
+                        {`(${threadCount})`}
+                      </span>
+                      )
                     }
 
                   </Typography>

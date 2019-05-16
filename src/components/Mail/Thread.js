@@ -158,7 +158,7 @@ const Thread = ({ classes, messages, hasUnread }) => {
                 {...message}
               />
             ))
-            : null
+            : ''
         }
       </ExpansionPanelDetails>
     </ExpansionPanel>

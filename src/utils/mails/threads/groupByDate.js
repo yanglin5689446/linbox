@@ -41,9 +41,9 @@ const groupThreadsByDate = (cluster) => {
   return result
 }
 
-const groupClustersByDate = (clusterized) => {
+const groupByDate = (clusters) => {
   const result = []
-  clusterized.forEach((clusterOrThread) => {
+  clusters.forEach((clusterOrThread) => {
     const cluster = clusterOrThread.id
       ? clusterOrThread
       : groupThreadsByDate(clusterOrThread)
@@ -56,4 +56,4 @@ const groupClustersByDate = (clusterized) => {
   return result
 }
 
-export default groupClustersByDate
+export default groupByDate
