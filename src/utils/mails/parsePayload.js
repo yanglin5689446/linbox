@@ -3,10 +3,20 @@ import URLSafeBase64 from 'urlsafe-base64'
 
 const getNameAndMail = (value) => {
   if (!value) return { name: '', mail: '' }
-  const mailRegex = /([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/g
-  const mail = value.match(mailRegex)[0] || ''
-  const name = value.replace(mail, '').replace('<>', '').trim().replace(/"/g, '')
-    || mail.split('@')[0]
+  const delimiterIndex = value.lastIndexOf(' ')
+  let name
+  let mail
+  if (delimiterIndex === -1) {
+    mail = value[0] === '<'
+      ? value.slice(1, value.length - 1)
+      : value.slice(0, value.length)
+    name = mail.split('@')[0] || mail
+  } else {
+    name = value[0] === '"'
+      ? value.slice(1, delimiterIndex - 1)
+      : value.slice(0, delimiterIndex)
+    mail = value.slice(delimiterIndex + 2, value.length - 1)
+  }
   return { name, mail }
 }
 
