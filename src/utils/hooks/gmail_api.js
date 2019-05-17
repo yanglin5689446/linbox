@@ -1,6 +1,8 @@
 
 import { useContext, useCallback } from 'react'
 
+import debounce from 'lodash.debounce'
+
 import UserContext from 'context/user'
 import MailsContext from 'context/mails'
 import DraftsContext from 'context/drafts'
@@ -40,7 +42,7 @@ const useGmailAPI = () => {
       })
   })
 
-  const loadMails = useCallback(() => {
+  const loadMails = useCallback(debounce(() => {
     const userId = user.emailAddresses[0].value
     gmailApi.users.threads.list({ userId })
       .then(({ result }) => Promise.all(
@@ -50,7 +52,7 @@ const useGmailAPI = () => {
         const threads = responses.map(({ result }) => result)
         setMails(threads)
       })
-  }, [])
+  }, 500), [])
 
   const modifyMessage = useCallback(({ id, add, remove }) => {
     const userId = user.emailAddresses[0].value
@@ -67,6 +69,13 @@ const useGmailAPI = () => {
       .batchModify({
         ids, userId, addLabelIds: add, removeLabelIds: remove,
       })
+      .execute()
+  }, [])
+
+  const batchDeleteMessages = useCallback((ids) => {
+    const userId = user.emailAddresses[0].value
+    gmailApi.users.messages
+      .batchDelete({ ids, userId })
       .execute()
   }, [])
 
@@ -136,6 +145,7 @@ const useGmailAPI = () => {
     trashMessage,
     modifyMessage,
     batchModifyMessages,
+    batchDeleteMessages,
     loadDrafts,
     createDraft,
     updateDraft,
