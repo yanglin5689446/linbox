@@ -42,12 +42,21 @@ const useGoogleAPI = () => {
     // When signin status changes, this function is called.
     // If the signin status is changed to signedIn, we make an API call.
     if (isSignedIn) {
+      const auth = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse()
+      const token = auth.access_token
+      const expiry = Date.now() + auth.expires_in * 1000
+      localStorage.setItem('token', token)
+      localStorage.setItem('expiry', expiry)
+
       gapi.client.people.people.get({
         resourceName: 'people/me',
         personFields: 'names,locales,photos,emailAddresses',
       })
         .then(
-          response => updateUserProfile(response.result),
+          (response) => {
+            localStorage.setItem('user', JSON.stringify(response.result))
+            updateUserProfile(response.result)
+          },
           reason => console.log(`Error: ${reason.result.error.message}`), // eslint-disable-line
         )
     }
@@ -56,26 +65,41 @@ const useGoogleAPI = () => {
   const initClient = useCallback(() => gapi.load('client:auth2', () => {
     // Initialize the client with API key and People API, and initialize OAuth with an
     // OAuth 2.0 client ID and scopes (space delimited string) to request access.
-    gapi.client.init({
-      apiKey: 'AIzaSyAvRqMi5pnaGVCV14BlEfKGs9xePuhtZk0',
-      discoveryDocs: [
-        'https://people.googleapis.com/$discovery/rest?version=v1',
-        'https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest',
-      ],
-      clientId: '283173290792-09mip7ds9kjfo77qs1p4c3ea07pk2mot.apps.googleusercontent.com',
-      scope: [
-        'profile',
-        'https://mail.google.com/',
-        'https://www.google.com/m8/feeds',
-      ].join(' '),
-    }).then(() => {
-      // Listen for sign-in state changes.
-      gapi.auth2.getAuthInstance().isSignedIn.listen(initUser)
+    try {
+      // try use exist token
+      const expiry = localStorage.getItem('expiry')
+      if (!expiry || new Date(expiry) > Date.now()) throw new Error('Token expired')
+      const token = localStorage.getItem('token')
+      gapi.client.setToken({ access_token: token })
+      const userInfo = JSON.parse(localStorage.getItem('user'))
+      console.log(userInfo)
+      updateUserProfile(userInfo)
+    } catch (e) {
+      // if no local cache found
+      // log error
+      console.log(e) // eslint-disable-line
 
-      // Handle the initial sign-in state.
-      initUser(gapi.auth2.getAuthInstance().isSignedIn.get())
-      getContacts()
-    })
+      // init client
+      gapi.client.init({
+        apiKey: 'AIzaSyAvRqMi5pnaGVCV14BlEfKGs9xePuhtZk0',
+        discoveryDocs: [
+          'https://people.googleapis.com/$discovery/rest?version=v1',
+          'https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest',
+        ],
+        clientId: '283173290792-09mip7ds9kjfo77qs1p4c3ea07pk2mot.apps.googleusercontent.com',
+        scope: [
+          'profile',
+          'https://mail.google.com/',
+          'https://www.google.com/m8/feeds',
+        ].join(' '),
+      }).then(() => {
+        // Listen for sign-in state changes.
+        gapi.auth2.getAuthInstance().isSignedIn.listen(initUser)
+        // Handle the initial sign-in state.
+        initUser(gapi.auth2.getAuthInstance().isSignedIn.get())
+        getContacts()
+      })
+    }
   }), [])
 
   return {
