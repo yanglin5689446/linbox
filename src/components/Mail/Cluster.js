@@ -80,7 +80,7 @@ const getLabelIcon = (label) => {
 const getLabelClass = label => label.id.split('_')[1].toLowerCase()
 
 const Cluster = ({ classes, primaryLabel, threads }) => {
-  const { trashThread, batchModifyMessages } = useGmailAPI()
+  const { batchModifyMessages } = useGmailAPI()
   const { removeThreadLabel } = useContext(MailsContext)
   const [expanded, setExpanded] = useState(false)
   const { t } = useTranslation(['labels', 'date'])
@@ -181,9 +181,15 @@ const Cluster = ({ classes, primaryLabel, threads }) => {
                   <DeleteIcon
                     className={classes.actionIcon}
                     onClick={(e) => {
-                      Object.values(threads)
-                        .forEach(nested => nested.threads
-                          .forEach(thread => trashThread(thread.messages[0].threadId)))
+                      const flattenThreads = Object.values(threads)
+                        .map(thread => thread.threads)
+                        .flat()
+                      flattenThreads.forEach(({ id }) => removeThreadLabel({ id, label: 'INBOX' }))
+                      const ids = flattenThreads
+                        .map(thread => thread.messages)
+                        .flat()
+                        .map(({ id }) => id)
+                      batchModifyMessages({ ids, add: ['TRASH'], remove: ['INBOX'] })
                       e.stopPropagation()
                     }}
                   />
