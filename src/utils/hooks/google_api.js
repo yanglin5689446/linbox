@@ -17,7 +17,7 @@ const useGoogleAPI = () => {
       const endpoint = `https://www.googleapis.com/m8/feeds/contacts/default/thin?alt=json&access_token=${token}&max-results=500&v=3.0`
       fetchJsonp(endpoint)
         .then(response => response.json())
-        .then(json => updateContacts(json.feed.entry
+        .then(json => updateContacts((json.feed.entry || [])
           .filter(contact => contact.gd$email)
           .map(contact => ({
             id: contact.id.$t.split('/').pop(),
