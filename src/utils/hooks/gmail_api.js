@@ -44,7 +44,7 @@ const useGmailAPI = () => {
 
   const loadMails = useCallback(debounce(() => {
     const userId = user.emailAddresses[0].value
-    gmailApi.users.threads.list({ userId })
+    gmailApi.users.threads.list({ userId, maxResults: 10000 })
       .then(({ result }) => Promise.all(
         result.threads.map(({ id }) => gmailApi.users.threads.get({ userId, id })),
       ))
@@ -52,7 +52,7 @@ const useGmailAPI = () => {
         const threads = responses.map(({ result }) => result)
         setMails(threads)
       })
-  }, 500), [])
+  }, 2000), [])
 
   const modifyMessage = useCallback(({ id, add, remove }) => {
     const userId = user.emailAddresses[0].value
