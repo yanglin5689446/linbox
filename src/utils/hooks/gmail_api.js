@@ -42,7 +42,7 @@ const useGmailAPI = () => {
       })
   })
 
-  const loadMails = useCallback(debounce(() => {
+  const loadMails = useCallback(() => {
     const userId = user.emailAddresses[0].value
     gmailApi.users.threads.list({ userId, maxResults: 10000 })
       .then(({ result }) => Promise.all(
@@ -52,7 +52,7 @@ const useGmailAPI = () => {
         const threads = responses.map(({ result }) => result)
         setMails(threads)
       })
-  }, 2000), [])
+  }, [])
 
   const modifyMessage = useCallback(({ id, add, remove }) => {
     const userId = user.emailAddresses[0].value
@@ -101,12 +101,12 @@ const useGmailAPI = () => {
   const trashMessage = useCallback(({ id, threadId }) => {
     const userId = user.emailAddresses[0].value
     removeMessage({ id, threadId })
-    gmailApi.users.messages.trash({ userId, id }).then(loadMails)
+    gmailApi.users.messages.trash({ userId, id }).then(debounce(loadMails, 5000))
   }, [])
   const trashThread = useCallback((id) => {
     const userId = user.emailAddresses[0].value
     removeThread(id)
-    gmailApi.users.threads.trash({ userId, id }).then(loadMails)
+    gmailApi.users.threads.trash({ userId, id }).then(debounce(loadMails, 5000))
   }, [])
 
   const createDraft = useCallback((draft) => {
