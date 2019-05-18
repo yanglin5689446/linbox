@@ -10,6 +10,7 @@ import {
 import InboxIcon from '@material-ui/icons/Inbox'
 import DraftsIcon from '@material-ui/icons/Drafts'
 import CheckIcon from '@material-ui/icons/Check'
+import DeleteIcon from '@material-ui/icons/Delete'
 import AccountBoxIcon from '@material-ui/icons/AccountBox'
 import EmailIcon from '@material-ui/icons/Email'
 import { useTranslation } from 'react-i18next'
@@ -47,10 +48,11 @@ const SideBar = ({ classes, open }) => {
           <Divider className={classes.divider} />
 
           <Tab icon={<DraftsIcon />} to='/drafts' text={t('DRAFTS')} />
+          <Tab icon={<DeleteIcon />} to='/trash' text={t('TRASH')} />
+
           {/*
             <Tab icon={<SendIcon />} to='/Send' text={t('SEND')} />
             <Tab icon={<NotificationsIcon />} to='/reminder' text={t('REMINDER')} />
-            <Tab icon={<DeleteIcon />} to='/trash' text={t('TRASH')} />
             <Tab icon={<ReportIcon />} to='/spam' text={t('SPAM')} />
           */}
 
