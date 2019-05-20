@@ -5,29 +5,20 @@ import {
 } from '@material-ui/core'
 
 import useProcessedMails from 'utils/hooks/processed_mails'
+import useGmailAPI from 'utils/hooks/gmail_api'
 import Preview from 'components/Mail/Preview'
 import ReloadButton from 'components/ReloadButton'
 
-const styles = () => ({
-  container: {
-    width: '70vw',
-    maxWidth: 1200,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  reloadButtonContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
-})
+import styles from 'pages/style'
 
 const Inbox = ({ classes }) => {
   const processed = useProcessedMails({ includes: ['INBOX', 'SENT'] })
+  const { loadMails } = useGmailAPI()
 
   return (
     <div className={classes.container}>
       <div className={classes.reloadButtonContainer}>
-        <ReloadButton />
+        <ReloadButton onClick={loadMails} />
       </div>
       <div>
         {
