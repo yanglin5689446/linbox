@@ -10,7 +10,7 @@ export default ({ id, messages }) => ({
       snippet: message.snippet,
       labelIds: message.labelIds,
       unread: message.labelIds.includes('UNREAD'),
-      ...parsePayload(message.payload),
+      ...parsePayload(message),
     })),
   hasUnread: messages
     .map(({ labelIds }) => labelIds)

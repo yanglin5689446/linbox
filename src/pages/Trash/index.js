@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core'
 import RefreshIcon from '@material-ui/icons/Refresh'
 
-import Preview from 'components/Mail/Preview'
+import Thread from 'components/Mail/Thread'
 
 import useProcessedMails from 'utils/hooks/processed_mails'
 import useGmailAPI from 'utils/hooks/gmail_api'
@@ -27,8 +27,8 @@ const styles = () => ({
   },
 })
 
-const Inbox = ({ classes }) => {
-  const processed = useProcessedMails({ includes: ['INBOX', 'SENT'] })
+const Trash = ({ classes }) => {
+  const processed = useProcessedMails({ includes: ['TRASH'], aggregate: false })
   const { loadMails } = useGmailAPI()
 
   return (
@@ -47,14 +47,7 @@ const Inbox = ({ classes }) => {
       </div>
       <div>
         {
-          processed
-            ? processed.map(clusters => (
-              <Preview
-                key={clusters.label}
-                clusters={clusters}
-              />
-            ))
-            : 'Loading...'
+          processed.map(thread => <Thread key={thread.id} {...thread} />)
         }
       </div>
 
@@ -62,4 +55,4 @@ const Inbox = ({ classes }) => {
   )
 }
 
-export default withStyles(styles)(Inbox)
+export default withStyles(styles)(Trash)

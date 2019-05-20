@@ -11,12 +11,14 @@ import groupByDate from 'utils/mails/threads/groupByDate'
 
 const map = func => array => array.map(func)
 
-const useProcessedMails = ({ includes, excludes }) => {
+const useProcessedMails = ({ includes, excludes, aggregate = true }) => {
   const { labels } = useContext(LabelsContext)
   const { mails } = useContext(MailsContext)
+  const final = aggregate
+    ? compose(groupByDate, classify(labels))
+    : self => self
   const process = useCallback(compose(
-    groupByDate,
-    classify(labels),
+    final,
     map(markPrimaryLabel(labels)),
     filterByLabel({ includes, excludes }),
     map(extract),
