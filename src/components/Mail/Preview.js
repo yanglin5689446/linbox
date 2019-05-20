@@ -6,7 +6,8 @@ import {
 } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 
-import ClusterOrThread from './ClusterOrThread'
+import Cluster from './Cluster'
+import Thread from './Thread'
 
 const styles = () => ({
   title: {
@@ -15,7 +16,7 @@ const styles = () => ({
   },
 })
 
-const TimeSlice = ({ classes, clusters }) => {
+const Preview = ({ classes, clusters }) => {
   const { t } = useTranslation(['date'])
   return (
     <div>
@@ -26,12 +27,12 @@ const TimeSlice = ({ classes, clusters }) => {
         {t(clusters.label, { date: clusters.date })}
       </Typography>
       {
-        // @todo: change key to something other than index
-        // eslint-disable-next-line
-        clusters.threads.map((thread, index) => <ClusterOrThread key={index} {...thread} />)
+        clusters.threads.map(props => (props.id
+          ? <Thread key={props.id} {...props} />
+          : <Cluster key={props.primaryLabel.id} {...props} />))
       }
     </div>
   )
 }
 
-export default withStyles(styles)(TimeSlice)
+export default withStyles(styles)(Preview)

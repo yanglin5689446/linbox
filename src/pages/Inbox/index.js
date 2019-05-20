@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core'
 import RefreshIcon from '@material-ui/icons/Refresh'
 
-import TimeSlice from 'components/Mail/TimeSlice'
+import Preview from 'components/Mail/Preview'
 
 import useProcessedMails from 'utils/hooks/processed_mails'
 import useGmailAPI from 'utils/hooks/gmail_api'
@@ -49,7 +49,7 @@ const Inbox = ({ classes }) => {
         {
           processed
             ? processed.map(clusters => (
-              <TimeSlice
+              <Preview
                 key={clusters.label}
                 clusters={clusters}
               />
