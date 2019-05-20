@@ -27,7 +27,9 @@ const fileMimeType = [
 ]
 
 const parsePayload = ({
-  headers, body, mimeType, parts = [],
+  id, payload: {
+    headers, body, mimeType, parts = [],
+  },
 }) => {
   const findHeader = field => (headers.find(e => e.name === field) || {}).value
 
@@ -45,40 +47,46 @@ const parsePayload = ({
   })
 
   const info = { from, subject, attachments }
-  switch (mimeType) {
-    case 'text/html': {
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
-      return { content: parsed, ...info }
-    }
-    case 'text/plain': {
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
-      return { content: `<pre>${parsed}</pre>`, ...info }
-    }
-    case 'multipart/alternative': {
-      const htmlPart = parts.find(part => part.mimeType === 'text/html')
-      const textPart = parts.find(part => part.mimeType === 'text/plain')
-      const p = (htmlPart || textPart)
-      const parsed = new TextDecoder().decode(URLSafeBase64.decode(p.body.data))
-      return { content: parsed, ...info }
-    }
-    case 'multipart/mixed': {
-      const plainTextPart = parts.find(part => part.mimeType === 'text/html')
-      const htmlPart = parts.find(part => part.mimeType === 'text/html')
-      const alternativePart = parts.find(part => part.mimeType === 'multipart/alternative')
-      let parsed
-      if (htmlPart) {
-        parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
-      } else if (plainTextPart) {
-        parsed = new TextDecoder().decode(URLSafeBase64.decode(plainTextPart.body.data))
-        parsed = `<pre>${parsed}</pre>`
-      } else if (alternativePart) {
-        const contentPart = alternativePart.parts.find(part => part.mimeType === 'text/html')
-        parsed = new TextDecoder().decode(URLSafeBase64.decode(contentPart.body.data))
+  try {
+    switch (mimeType) {
+      case 'text/html': {
+        const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
+        return { content: parsed, ...info }
       }
-      return { content: parsed, ...info }
+      case 'text/plain': {
+        const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
+        return { content: `<pre>${parsed}</pre>`, ...info }
+      }
+      case 'multipart/alternative': {
+        const htmlPart = parts.find(part => part.mimeType === 'text/html')
+        const textPart = parts.find(part => part.mimeType === 'text/plain')
+        const p = (htmlPart || textPart)
+        const parsed = new TextDecoder().decode(URLSafeBase64.decode(p.body.data))
+        return { content: parsed, ...info }
+      }
+      case 'multipart/mixed': {
+        const plainTextPart = parts.find(part => part.mimeType === 'text/html')
+        const htmlPart = parts.find(part => part.mimeType === 'text/html')
+        const alternativePart = parts.find(part => part.mimeType === 'multipart/alternative')
+        let parsed
+        if (htmlPart) {
+          parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
+        } else if (plainTextPart) {
+          parsed = new TextDecoder().decode(URLSafeBase64.decode(plainTextPart.body.data))
+          parsed = `<pre>${parsed}</pre>`
+        } else if (alternativePart) {
+          const contentPart = alternativePart.parts.find(part => part.mimeType === 'text/html')
+          parsed = new TextDecoder().decode(URLSafeBase64.decode(contentPart.body.data))
+        }
+        return { content: parsed, ...info }
+      }
+      default:
+        return info
     }
-    default:
-      return info
+  } catch (e) {
+    window.debug(`Message ID: ${id}`)
+    window.debug(e)
+    return info
   }
 }
 
