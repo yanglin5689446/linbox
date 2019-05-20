@@ -1,31 +1,13 @@
 
 import React from 'react'
-import {
-  withStyles,
-  Fab,
-} from '@material-ui/core'
-import RefreshIcon from '@material-ui/icons/Refresh'
-
-import Preview from 'components/Mail/Preview'
+import { withStyles } from '@material-ui/core'
 
 import useProcessedMails from 'utils/hooks/processed_mails'
 import useGmailAPI from 'utils/hooks/gmail_api'
 
-const styles = () => ({
-  container: {
-    width: '70vw',
-    maxWidth: 1200,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  reloadButtonContainer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
-  refreshIcon: {
-    margin: 2,
-  },
-})
+import Preview from 'components/Mail/Preview'
+import ReloadButton from 'components/ReloadButton'
+import styles from 'pages/style'
 
 const Done = ({ classes }) => {
   const processed = useProcessedMails({ excludes: ['INBOX', 'TRASH', 'SPAM'] })
@@ -34,16 +16,7 @@ const Done = ({ classes }) => {
   return (
     <div className={classes.container}>
       <div className={classes.reloadButtonContainer}>
-        <Fab
-          variant='extended'
-          size='small'
-          color='primary'
-          onClick={loadMails}
-          className={classes.reloadButton}
-        >
-          <RefreshIcon className={classes.refreshIcon} />
-          Reload
-        </Fab>
+        <ReloadButton onClick={loadMails} />
       </div>
       <div>
         {
@@ -52,6 +25,10 @@ const Done = ({ classes }) => {
               <Preview
                 key={clusters.label}
                 clusters={clusters}
+                actions={{
+                  backToInbox: true,
+                  trash: true,
+                }}
               />
             ))
             : 'Loading...'

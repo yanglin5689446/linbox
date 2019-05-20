@@ -109,6 +109,12 @@ const useGmailAPI = () => {
     gmailApi.users.threads.trash({ userId, id }).then(debounce(loadMails, 5000))
   }, [])
 
+  const deleteThread = useCallback((id) => {
+    const userId = user.emailAddresses[0].value
+    removeThread(id)
+    gmailApi.users.threads.delete({ userId, id }).then(debounce(loadMails, 5000))
+  }, [])
+
   const createDraft = useCallback((draft) => {
     const userId = user.emailAddresses[0].value
     gmailApi.users.drafts.create({ userId, message: { raw: draft.content } })
@@ -143,6 +149,7 @@ const useGmailAPI = () => {
     trashDraft,
     trashThread,
     trashMessage,
+    deleteThread,
     modifyMessage,
     batchModifyMessages,
     batchDeleteMessages,

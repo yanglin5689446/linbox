@@ -4,19 +4,12 @@ import {
   withStyles,
 } from '@material-ui/core'
 
-import Draft from 'components/Mail/Draft'
-
 import DraftsContext from 'context/drafts'
 import useGmailAPI from 'utils/hooks/gmail_api'
+import Draft from 'components/Mail/Draft'
+import ReloadButton from 'components/ReloadButton'
 
-const styles = () => ({
-  container: {
-    width: '70vw',
-    maxWidth: 1200,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-})
+import styles from 'pages/style'
 
 const Drafts = ({ classes }) => {
   const { loadDrafts } = useGmailAPI()
@@ -28,6 +21,9 @@ const Drafts = ({ classes }) => {
 
   return (
     <div className={classes.container}>
+      <div className={classes.reloadButtonContainer}>
+        <ReloadButton onClick={loadDrafts} />
+      </div>
       {
         Object.values(drafts.drafts)
           .map(draft => <Draft key={draft.id} draftId={draft.id} {...draft.message} />)

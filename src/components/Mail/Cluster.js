@@ -1,5 +1,5 @@
 
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useCallback } from 'react'
 import {
   withStyles,
   ExpansionPanel,
@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 import DeleteIcon from '@material-ui/icons/Delete'
 import LocalOfferIcon from '@material-ui/icons/LocalOffer'
+import InboxIcon from '@material-ui/icons/Inbox'
 import PeopleIcon from '@material-ui/icons/People'
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer'
 import FlagIcon from '@material-ui/icons/Flag'
@@ -41,6 +42,12 @@ const styles = theme => ({
   threadCount: {
     paddingLeft: 4,
     color: theme.palette.grey[700],
+  },
+  iconDone: {
+    color: colors.green[600],
+  },
+  iconInbox: {
+    color: colors.blue[500],
   },
   label: {
     padding: '0 24px',
@@ -79,23 +86,56 @@ const getLabelIcon = (label) => {
 
 const getLabelClass = label => label.id.split('_')[1].toLowerCase()
 
-const Cluster = ({ classes, primaryLabel, threads }) => {
-  const { batchModifyMessages } = useGmailAPI()
-  const { removeThreadLabel } = useContext(MailsContext)
+const Cluster = ({
+  classes, primaryLabel, threads, actions,
+}) => {
+  const { batchModifyMessages, batchDeleteMessages } = useGmailAPI()
+  const { removeThreadLabel, addThreadLabel } = useContext(MailsContext)
   const [expanded, setExpanded] = useState(false)
   const { t } = useTranslation(['labels', 'date'])
+
+  const flattenThreads = Object.values(threads)
+    .flatMap(thread => thread.threads)
+
+  const ids = flattenThreads
+    .flatMap(thread => thread.messages)
+    .map(({ id }) => id)
+
+  const backToInbox = useCallback((e) => {
+    flattenThreads.forEach(({ id }) => addThreadLabel({ id, label: 'INBOX' }))
+    batchModifyMessages({ ids, add: ['INBOX'] })
+    e.stopPropagation()
+  }, [threads])
+  const markAsDone = useCallback((e) => {
+    flattenThreads.forEach(({ id }) => removeThreadLabel({ id, label: 'INBOX' }))
+    batchModifyMessages({ ids, remove: ['INBOX'] })
+    e.stopPropagation()
+  }, [threads])
+
+  const trash = useCallback((e) => {
+    flattenThreads.forEach(({ id }) => removeThreadLabel({ id, label: 'INBOX' }))
+    batchModifyMessages({ ids, add: ['TRASH'], remove: ['INBOX'] })
+    e.stopPropagation()
+  }, [threads])
+
+  const permanentDelete = useCallback((e) => {
+    flattenThreads.forEach(({ id }) => removeThreadLabel({ id, label: 'INBOX' }))
+    batchDeleteMessages(ids)
+    e.stopPropagation()
+  }, [threads])
+
   const threadCount = Object.values(threads)
     .map(thread => thread.threads.length)
     .reduce((accum, current) => accum + current, 0)
   const senderUnreadMap = threads
-    .map(thread => thread.threads)
-    .flat()
+    .flatMap(thread => thread.threads)
     .map(thread => ({ from: thread.messages[0].from, unread: thread.hasUnread }))
     .reduce((accum, current) => {
       const n = current.from.name
       accum[n] = accum[n] || current.unread // eslint-disable-line
       return accum
     }, {})
+
   const senderUnreadList = Object.entries(senderUnreadMap)
 
   const hasUnread = senderUnreadList.some(entries => entries[1])
@@ -163,36 +203,42 @@ const Cluster = ({ classes, primaryLabel, threads }) => {
                   </span>
                 </Typography>
                 <div className={classes.actions}>
-                  <CheckIcon
-                    className={classes.actionIcon}
-                    onClick={(e) => {
-                      const flattenThreads = Object.values(threads)
-                        .map(thread => thread.threads)
-                        .flat()
-                      flattenThreads.forEach(({ id }) => removeThreadLabel({ id, label: 'INBOX' }))
-                      const ids = flattenThreads
-                        .map(thread => thread.messages)
-                        .flat()
-                        .map(({ id }) => id)
-                      batchModifyMessages({ ids, remove: ['INBOX'] })
-                      e.stopPropagation()
-                    }}
-                  />
-                  <DeleteIcon
-                    className={classes.actionIcon}
-                    onClick={(e) => {
-                      const flattenThreads = Object.values(threads)
-                        .map(thread => thread.threads)
-                        .flat()
-                      flattenThreads.forEach(({ id }) => removeThreadLabel({ id, label: 'INBOX' }))
-                      const ids = flattenThreads
-                        .map(thread => thread.messages)
-                        .flat()
-                        .map(({ id }) => id)
-                      batchModifyMessages({ ids, add: ['TRASH'], remove: ['INBOX'] })
-                      e.stopPropagation()
-                    }}
-                  />
+                  {
+                    actions.backToInbox
+                    && (
+                      <InboxIcon
+                        className={classNames(classes.actionIcon, classes.iconInbox)}
+                        onClick={backToInbox}
+                      />
+                    )
+                  }
+                  {
+                    actions.markAsDone
+                    && (
+                      <CheckIcon
+                        className={classNames(classes.actionIcon, classes.iconDone)}
+                        onClick={markAsDone}
+                      />
+                    )
+                  }
+                  {
+                    actions.trash
+                    && (
+                      <DeleteIcon
+                        className={classes.actionIcon}
+                        onClick={trash}
+                      />
+                    )
+                  }
+                  {
+                    actions.permanentDelete
+                    && (
+                      <DeleteIcon
+                        className={classes.actionIcon}
+                        onClick={permanentDelete}
+                      />
+                    )
+                  }
                 </div>
               </React.Fragment>
             )
@@ -210,7 +256,10 @@ const Cluster = ({ classes, primaryLabel, threads }) => {
                 >
                   { t(`date:${nested.label}`, { date: nested.date }) }
                 </Typography>
-                { nested.threads.map(thread => <Thread key={thread.id} {...thread} />) }
+                {
+                  nested.threads
+                    .map(thread => <Thread key={thread.id} {...thread} actions={actions} />)
+                }
               </div>
             ))
         }

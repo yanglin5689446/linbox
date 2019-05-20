@@ -5,10 +5,12 @@ const MailsContext = React.createContext()
 
 const actions = {
   setMails: 'SET_MAILS',
+  addMessageLabel: 'ADD_MESSAGE_LABEL',
   removeMessage: 'REMOVE_MESSAGE',
   removeThread: 'REMOVE_THREAD',
   removeMessageLabel: 'REMOVE_MESSAGE_LABEL',
   removeThreadLabel: 'REMOVE_THREAD_LABEL',
+  addThreadLabel: 'ADD_THREAD_LABEL',
 }
 
 const reducer = (state, action) => {
@@ -16,6 +18,26 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'SET_MAILS':
       return payload
+    case 'ADD_MESSAGE_LABEL': {
+      const { threadId, id, label } = payload
+      const index = state.findIndex(thread => thread.id === threadId)
+      const thread = state[index]
+      const updated = {
+        ...thread,
+        messages: thread.messages
+          .map(message => (message.id !== id
+            ? message
+            : ({
+              ...message,
+              labelIds: [...message.labelIds, label],
+            }))),
+      }
+      return [
+        ...state.slice(0, index),
+        updated,
+        ...state.slice(index + 1),
+      ]
+    }
     case 'REMOVE_MESSAGE_LABEL': {
       const { threadId, id, label } = payload
       const index = state.findIndex(thread => thread.id === threadId)
@@ -47,6 +69,25 @@ const reducer = (state, action) => {
           .map(message => ({
             ...message,
             labelIds: message.labelIds.filter(labelId => labelId !== label),
+          })),
+      }
+      return [
+        ...state.slice(0, index),
+        updated,
+        ...state.slice(index + 1),
+      ]
+    }
+
+    case 'ADD_THREAD_LABEL': {
+      const { id, label } = payload
+      const index = state.findIndex(thread => thread.id === id)
+      const thread = state[index]
+      const updated = {
+        ...thread,
+        messages: thread.messages
+          .map(message => ({
+            ...message,
+            labelIds: [...message.labelIds, label],
           })),
       }
       return [
@@ -106,17 +147,29 @@ export const MailsWrapper = Component => (props) => {
     payload,
   }), [])
 
+  const addMessageLabel = useCallback(payload => dispatch({
+    type: actions.addMessageLabel,
+    payload,
+  }), [])
+
   const removeThreadLabel = useCallback(payload => dispatch({
     type: actions.removeThreadLabel,
     payload,
   }), [])
 
+  const addThreadLabel = useCallback(payload => dispatch({
+    type: actions.addThreadLabel,
+    payload,
+  }), [])
+
   return (
     <MailsContext.Provider value={{
+      addMessageLabel,
       removeMessageLabel,
       removeThreadLabel,
       removeMessage,
       removeThread,
+      addThreadLabel,
       mails,
       setMails,
     }}

@@ -10,16 +10,19 @@ import {
   Chip,
   colors,
 } from '@material-ui/core'
+import InboxIcon from '@material-ui/icons/Inbox'
 import Message from 'components/Mail/Message'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CheckIcon from '@material-ui/icons/Check'
 import InsertDriveFileIcon from '@material-ui/icons/InsertDriveFile'
 import InsertPhotoIcon from '@material-ui/icons/InsertPhoto'
 
+import classNames from 'classnames'
+
 import useGmailAPI from 'utils/hooks/gmail_api'
 
+import MailsContext from 'context/mails'
 import { threadSharedStyles } from './styles'
-import MailsContext from '../../context/mails'
 
 const styles = theme => ({
   ...threadSharedStyles(theme),
@@ -40,13 +43,23 @@ const styles = theme => ({
     color: theme.palette.secondary.light,
     marginLeft: '.5rem',
   },
+  iconDone: {
+    color: colors.green[600],
+  },
+  iconInbox: {
+    color: colors.blue[500],
+  },
 })
 
 
-const Thread = ({ classes, messages, hasUnread }) => {
-  const { trashThread, batchModifyMessages } = useGmailAPI()
-  const { removeThreadLabel } = useContext(MailsContext)
+const Thread = ({
+  id, classes, messages, hasUnread, actions,
+}) => {
+  const { trashThread, deleteThread, batchModifyMessages } = useGmailAPI()
+  const { removeThreadLabel, addThreadLabel } = useContext(MailsContext)
   const [expanded, setExpanded] = useState(false)
+
+  const ids = messages.map(message => message.id)
 
   const mimeTypeIcon = useCallback((type) => {
     switch (type) {
@@ -56,6 +69,27 @@ const Thread = ({ classes, messages, hasUnread }) => {
         return <InsertDriveFileIcon color='secondary' className={classes.attachmentIcon} />
     }
   })
+
+  const backToInbox = useCallback((e) => {
+    addThreadLabel({ id, label: 'INBOX' })
+    batchModifyMessages({ ids, add: ['INBOX'] })
+    e.stopPropagation()
+  }, [messages])
+
+  const markAsDone = useCallback((e) => {
+    removeThreadLabel({ id, label: 'INBOX' })
+    batchModifyMessages({ ids, remove: ['INBOX'] })
+    e.stopPropagation()
+  }, [messages])
+
+  const trash = useCallback((e) => {
+    trashThread(id)
+    e.stopPropagation()
+  }, [messages])
+  const permanentDelete = useCallback((e) => {
+    deleteThread(id)
+    e.stopPropagation()
+  }, [messages])
 
 
   const senderUnreadMap = messages.reduce((accum, current) => {
@@ -74,9 +108,7 @@ const Thread = ({ classes, messages, hasUnread }) => {
       </span>
     ))
 
-  const attachments = messages
-    .map(message => message.attachments)
-    .flat()
+  const attachments = messages.flatMap(message => message.attachments)
 
   return (
     <ExpansionPanel expanded={expanded} onChange={() => setExpanded(exp => !exp)}>
@@ -107,9 +139,9 @@ const Thread = ({ classes, messages, hasUnread }) => {
                       && (
                       <div className={classes.attachments}>
                         {
-                          attachments.map(({ id, name, mimeType }) => (
+                          attachments.map(({ id: attachmentId, name, mimeType }) => (
                             <Chip
-                              key={id}
+                              key={attachmentId}
                               icon={mimeTypeIcon(mimeType)}
                               variant='outlined'
                               label={name}
@@ -124,24 +156,42 @@ const Thread = ({ classes, messages, hasUnread }) => {
                 </Typography>
 
                 <div className={classes.actions}>
-                  <CheckIcon
-                    className={classes.actionIcon}
-                    onClick={(e) => {
-                      removeThreadLabel({ id: messages[0].threadId, label: 'INBOX' })
-                      batchModifyMessages({
-                        ids: messages.map(({ id }) => id),
-                        remove: ['INBOX'],
-                      })
-                      e.stopPropagation()
-                    }}
-                  />
-                  <DeleteIcon
-                    className={classes.actionIcon}
-                    onClick={(e) => {
-                      trashThread(messages[0].threadId)
-                      e.stopPropagation()
-                    }}
-                  />
+                  {
+                    actions.backToInbox
+                    && (
+                      <InboxIcon
+                        className={classNames(classes.actionIcon, classes.iconInbox)}
+                        onClick={backToInbox}
+                      />
+                    )
+                  }
+                  {
+                    actions.markAsDone
+                    && (
+                      <CheckIcon
+                        className={classNames(classes.actionIcon, classes.iconDone)}
+                        onClick={markAsDone}
+                      />
+                    )
+                  }
+                  {
+                    actions.trash
+                    && (
+                      <DeleteIcon
+                        className={classes.actionIcon}
+                        onClick={trash}
+                      />
+                    )
+                  }
+                  {
+                    actions.permanentDelete
+                    && (
+                      <DeleteIcon
+                        className={classes.actionIcon}
+                        onClick={permanentDelete}
+                      />
+                    )
+                  }
                 </div>
               </React.Fragment>
             )
@@ -155,6 +205,7 @@ const Thread = ({ classes, messages, hasUnread }) => {
               <Message
                 key={message.id}
                 initialExpand={index === messages.length - 1}
+                actions={actions}
                 {...message}
               />
             ))
