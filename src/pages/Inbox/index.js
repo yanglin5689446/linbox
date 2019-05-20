@@ -2,14 +2,11 @@
 import React from 'react'
 import {
   withStyles,
-  Fab,
 } from '@material-ui/core'
-import RefreshIcon from '@material-ui/icons/Refresh'
-
-import Preview from 'components/Mail/Preview'
 
 import useProcessedMails from 'utils/hooks/processed_mails'
-import useGmailAPI from 'utils/hooks/gmail_api'
+import Preview from 'components/Mail/Preview'
+import ReloadButton from 'components/ReloadButton'
 
 const styles = () => ({
   container: {
@@ -22,28 +19,15 @@ const styles = () => ({
     display: 'flex',
     justifyContent: 'flex-end',
   },
-  refreshIcon: {
-    margin: 2,
-  },
 })
 
 const Inbox = ({ classes }) => {
   const processed = useProcessedMails({ includes: ['INBOX', 'SENT'] })
-  const { loadMails } = useGmailAPI()
 
   return (
     <div className={classes.container}>
       <div className={classes.reloadButtonContainer}>
-        <Fab
-          variant='extended'
-          size='small'
-          color='primary'
-          onClick={loadMails}
-          className={classes.reloadButton}
-        >
-          <RefreshIcon className={classes.refreshIcon} />
-          Reload
-        </Fab>
+        <ReloadButton />
       </div>
       <div>
         {
