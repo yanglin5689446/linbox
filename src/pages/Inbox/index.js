@@ -27,6 +27,10 @@ const Inbox = ({ classes }) => {
               <Preview
                 key={clusters.label}
                 clusters={clusters}
+                actions={{
+                  markAsDone: true,
+                  trash: true,
+                }}
               />
             ))
             : 'Loading...'

@@ -16,7 +16,7 @@ const styles = () => ({
   },
 })
 
-const Preview = ({ classes, clusters }) => {
+const Preview = ({ classes, clusters, actions = {} }) => {
   const { t } = useTranslation(['date'])
   return (
     <div>
@@ -28,8 +28,8 @@ const Preview = ({ classes, clusters }) => {
       </Typography>
       {
         clusters.threads.map(props => (props.id
-          ? <Thread key={props.id} {...props} />
-          : <Cluster key={props.primaryLabel.id} {...props} />))
+          ? <Thread key={props.id} {...props} actions={actions} />
+          : <Cluster key={props.primaryLabel.id} {...props} actions={actions} />))
       }
     </div>
   )

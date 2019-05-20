@@ -1,6 +1,6 @@
 
 import React, {
-  useState, useEffect, useContext, useMemo, useRef,
+  useState, useEffect, useContext, useMemo, useRef, useCallback,
 } from 'react'
 import {
   withStyles,
@@ -11,7 +11,11 @@ import {
 } from '@material-ui/core'
 import uuid from 'uuid/v1'
 
+import InboxIcon from '@material-ui/icons/Inbox'
 import DeleteIcon from '@material-ui/icons/Delete'
+import CheckIcon from '@material-ui/icons/Check'
+
+import classNames from 'classnames'
 
 import MailsContext from 'context/mails'
 import useGmailAPI from 'utils/hooks/gmail_api'
@@ -98,12 +102,35 @@ const processHTMLContent = (scope, raw) => {
 }
 
 const Message = ({
-  classes, threadId, id, from, snippet, content, initialExpand, unread,
+  classes, threadId, id, from, snippet, content, initialExpand, unread, actions,
 }) => {
-  const { removeMessageLabel } = useContext(MailsContext)
-  const { modifyMessage, trashMessage } = useGmailAPI()
+  const { addMessageLabel, removeMessageLabel } = useContext(MailsContext)
+  const { modifyMessage, trashMessage, deleteMessage } = useGmailAPI()
   const [expanded, setExpanded] = useState(initialExpand)
   const scope = useRef(uuid())
+
+  const backToInbox = useCallback((e) => {
+    addMessageLabel({ id, label: 'INBOX' })
+    modifyMessage({ id, add: ['INBOX'] })
+    e.stopPropagation()
+  }, [id])
+
+  const markAsDone = useCallback((e) => {
+    removeMessageLabel({ id, label: 'INBOX' })
+    modifyMessage({ id, remove: ['INBOX'] })
+    e.stopPropagation()
+  }, [id])
+
+  const trash = useCallback((e) => {
+    trashMessage({ id, threadId })
+    e.stopPropagation()
+  }, [id])
+  const permanentDelete = useCallback((e) => {
+    deleteMessage(id)
+    e.stopPropagation()
+  }, [id])
+
+
   useEffect(() => {
     if (expanded && unread) {
       modifyMessage({ id, remove: ['UNREAD'] })
@@ -127,13 +154,42 @@ const Message = ({
           <div className={classes.head}>
             <strong>{ from.name }</strong>
             <div className={classes.actions}>
-              <DeleteIcon
-                className={classes.actionIcon}
-                onClick={(e) => {
-                  trashMessage({ id, threadId })
-                  e.stopPropagation()
-                }}
-              />
+              {
+                actions.backToInbox
+                && (
+                  <InboxIcon
+                    className={classNames(classes.actionIcon, classes.iconInbox)}
+                    onClick={backToInbox}
+                  />
+                )
+              }
+              {
+                actions.markAsDone
+                && (
+                  <CheckIcon
+                    className={classNames(classes.actionIcon, classes.iconDone)}
+                    onClick={markAsDone}
+                  />
+                )
+              }
+              {
+                actions.trash
+                && (
+                  <DeleteIcon
+                    className={classes.actionIcon}
+                    onClick={trash}
+                  />
+                )
+              }
+              {
+                actions.permanentDelete
+                && (
+                  <DeleteIcon
+                    className={classes.actionIcon}
+                    onClick={permanentDelete}
+                  />
+                )
+              }
             </div>
           </div>
           {

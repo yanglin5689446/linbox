@@ -20,7 +20,16 @@ const Trash = ({ classes }) => {
       </div>
       <div>
         {
-          processed.map(thread => <Thread key={thread.id} {...thread} />)
+          processed.map(thread => (
+            <Thread
+              key={thread.id}
+              actions={{
+                backToInbox: true,
+                permanentDelete: true,
+              }}
+              {...thread}
+            />
+          ))
         }
       </div>
 

@@ -25,6 +25,10 @@ const Done = ({ classes }) => {
               <Preview
                 key={clusters.label}
                 clusters={clusters}
+                actions={{
+                  backToInbox: true,
+                  trash: true,
+                }}
               />
             ))
             : 'Loading...'
