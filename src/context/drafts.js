@@ -1,5 +1,6 @@
 
-import React, { useReducer, useCallback } from 'react'
+import React, { useReducer } from 'react'
+import actionCreator from 'utils/actionCreator'
 
 const DraftsContext = React.createContext()
 
@@ -13,9 +14,9 @@ const actions = {
 const reducer = (state, action) => {
   const { payload } = action
   switch (action.type) {
-    case 'UPDATE_DRAFTS':
+    case actions.updateDrafts:
       return { ...state, drafts: payload }
-    case 'NEW_DRAFT_EDIT':
+    case actions.newDraftEdit:
       return {
         ...state,
         editing: {
@@ -23,11 +24,11 @@ const reducer = (state, action) => {
           [payload.id]: payload,
         },
       }
-    case 'CLOSE_DRAFT_EDIT': {
+    case actions.closeDraftEdit: {
       const { [payload]: discard, ...editing } = state.editing
       return { ...state, editing }
     }
-    case 'UPDATE_DRAFT_EDIT':
+    case actions.updateDraftEdit:
       return {
         ...state,
         editing: {
@@ -48,22 +49,10 @@ export const DraftsWrapper = Component => (props) => {
     drafts: [],
     editing: {},
   })
-  const updateDrafts = useCallback(payload => dispatch({
-    type: actions.updateDrafts,
-    payload,
-  }), [])
-  const newDraftEdit = useCallback(payload => dispatch({
-    type: actions.newDraftEdit,
-    payload,
-  }), [])
-  const closeDraftEdit = useCallback(payload => dispatch({
-    type: actions.closeDraftEdit,
-    payload,
-  }), [])
-  const updateDraftEdit = useCallback(payload => dispatch({
-    type: actions.updateDraftEdit,
-    payload,
-  }), [])
+  const updateDrafts = actionCreator(actions.updateDrafts, dispatch)
+  const newDraftEdit = actionCreator(actions.newDraftEdit, dispatch)
+  const closeDraftEdit = actionCreator(actions.closeDraftEdit, dispatch)
+  const updateDraftEdit = actionCreator(actions.updateDraftEdit, dispatch)
 
   return (
     <DraftsContext.Provider value={{

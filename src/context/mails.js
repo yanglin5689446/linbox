@@ -1,5 +1,6 @@
 
-import React, { useReducer, useCallback } from 'react'
+import React, { useReducer } from 'react'
+import actionCreator from 'utils/actionCreator'
 
 const MailsContext = React.createContext()
 
@@ -16,9 +17,9 @@ const actions = {
 const reducer = (state, action) => {
   const { payload } = action
   switch (action.type) {
-    case 'SET_MAILS':
+    case actions.setMails:
       return payload
-    case 'ADD_MESSAGE_LABEL': {
+    case actions.addMessageLabel: {
       const { threadId, id, label } = payload
       const index = state.findIndex(thread => thread.id === threadId)
       const thread = state[index]
@@ -38,7 +39,7 @@ const reducer = (state, action) => {
         ...state.slice(index + 1),
       ]
     }
-    case 'REMOVE_MESSAGE_LABEL': {
+    case actions.removeMessageLabel: {
       const { threadId, id, label } = payload
       const index = state.findIndex(thread => thread.id === threadId)
       const thread = state[index]
@@ -59,7 +60,7 @@ const reducer = (state, action) => {
       ]
     }
 
-    case 'REMOVE_THREAD_LABEL': {
+    case actions.removeThreadLabel: {
       const { id, label } = payload
       const index = state.findIndex(thread => thread.id === id)
       const thread = state[index]
@@ -78,7 +79,7 @@ const reducer = (state, action) => {
       ]
     }
 
-    case 'ADD_THREAD_LABEL': {
+    case actions.addThreadLabel: {
       const { id, label } = payload
       const index = state.findIndex(thread => thread.id === id)
       const thread = state[index]
@@ -97,7 +98,7 @@ const reducer = (state, action) => {
       ]
     }
 
-    case 'REMOVE_MESSAGE': {
+    case actions.removeMessage: {
       const { threadId, id } = payload
       const index = state.findIndex(thread => thread.id === threadId)
       const thread = state[index]
@@ -111,7 +112,7 @@ const reducer = (state, action) => {
         ...state.slice(index + 1),
       ]
     }
-    case 'REMOVE_THREAD': {
+    case actions.removeThread: {
       const id = payload
       const index = state.findIndex(thread => thread.id === id)
       return [
@@ -127,40 +128,13 @@ const reducer = (state, action) => {
 
 export const MailsWrapper = Component => (props) => {
   const [mails, dispatch] = useReducer(reducer, [])
-  const setMails = useCallback(payload => dispatch({
-    type: actions.setMails,
-    payload,
-  }), [])
-
-  const removeMessage = useCallback(payload => dispatch({
-    type: actions.removeMessage,
-    payload,
-  }), [])
-
-  const removeThread = useCallback(payload => dispatch({
-    type: actions.removeThread,
-    payload,
-  }), [])
-
-  const removeMessageLabel = useCallback(payload => dispatch({
-    type: actions.removeMessageLabel,
-    payload,
-  }), [])
-
-  const addMessageLabel = useCallback(payload => dispatch({
-    type: actions.addMessageLabel,
-    payload,
-  }), [])
-
-  const removeThreadLabel = useCallback(payload => dispatch({
-    type: actions.removeThreadLabel,
-    payload,
-  }), [])
-
-  const addThreadLabel = useCallback(payload => dispatch({
-    type: actions.addThreadLabel,
-    payload,
-  }), [])
+  const setMails = actionCreator(actions.setMails, dispatch)
+  const removeMessage = actionCreator(actions.removeMessage, dispatch)
+  const removeThread = actionCreator(actions.removeThread, dispatch)
+  const removeMessageLabel = actionCreator(actions.removeMessageLabel, dispatch)
+  const addMessageLabel = actionCreator(actions.addMessageLabel, dispatch)
+  const removeThreadLabel = actionCreator(actions.removeThreadLabel, dispatch)
+  const addThreadLabel = actionCreator(actions.addThreadLabel, dispatch)
 
   return (
     <MailsContext.Provider value={{
