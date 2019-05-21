@@ -35,17 +35,17 @@ const Draft = ({
       <ExpansionPanelSummary classes={{ root: classes.summary, content: classes.summaryContent }}>
         <React.Fragment>
           <div className={classes.sender}>
-              <Avatar
-                alt=''
-                className={classes.avatar}
-              >
-                { sender[0] }
-              </Avatar>
-              <Typography className={classes.name}>
-                { sender }
-              </Typography>
-            </div>
-            {
+            <Avatar
+              alt=''
+              className={classes.avatar}
+            >
+              { sender[0] }
+            </Avatar>
+            <Typography className={classes.name}>
+              { sender }
+            </Typography>
+          </div>
+          {
               expanded || (
                 <Typography className={classes.brief}>
                   { parsed.subject }
@@ -55,15 +55,15 @@ const Draft = ({
                 </Typography>
               )
             }
-            <div className={classes.actions}>
-              <DeleteIcon
-                className={classes.actionIcon}
-                onClick={(e) => {
-                  trashDraft(threadId)
-                  e.stopPropagation()
-                }}
-              />
-            </div>
+          <div className={classes.actions}>
+            <DeleteIcon
+              className={classes.actionIcon}
+              onClick={(e) => {
+                trashDraft(threadId)
+                e.stopPropagation()
+              }}
+            />
+          </div>
         </React.Fragment>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.mails}>
