@@ -1,7 +1,11 @@
 
-export default labels => (thread) => {
-  const matchedLabel = label => thread.messages[0].labelIds.includes(label.id)
-  const isPersonal = thread.messages[0].labelIds.includes(labels.personal.id) && labels.personal
+export default (labels, sent) => (thread) => {
+  const { messages } = thread
+  const selectedMessage = sent
+    ? messages[0]
+    : messages.find(message => !message.labelIds.includes('SENT')) || messages[0]
+  const matchedLabel = label => selectedMessage.labelIds.includes(label.id)
+  const isPersonal = selectedMessage.labelIds.includes(labels.personal.id) && labels.personal
   return {
     ...thread,
     primaryLabel: labels.user.find(matchedLabel)
