@@ -1,6 +1,6 @@
 
 import React, { useReducer } from 'react'
-import actionCreator from 'utils/actionCreator'
+import useActionCreator from 'utils/hooks/action_creator'
 
 const DraftsContext = React.createContext()
 
@@ -49,10 +49,10 @@ export const DraftsWrapper = Component => (props) => {
     drafts: [],
     editing: {},
   })
-  const updateDrafts = actionCreator(actions.updateDrafts, dispatch)
-  const newDraftEdit = actionCreator(actions.newDraftEdit, dispatch)
-  const closeDraftEdit = actionCreator(actions.closeDraftEdit, dispatch)
-  const updateDraftEdit = actionCreator(actions.updateDraftEdit, dispatch)
+  const updateDrafts = useActionCreator(actions.updateDrafts, dispatch)
+  const newDraftEdit = useActionCreator(actions.newDraftEdit, dispatch)
+  const closeDraftEdit = useActionCreator(actions.closeDraftEdit, dispatch)
+  const updateDraftEdit = useActionCreator(actions.updateDraftEdit, dispatch)
 
   return (
     <DraftsContext.Provider value={{

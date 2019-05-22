@@ -1,6 +1,6 @@
 
 import React, { useReducer } from 'react'
-import actionCreator from 'utils/actionCreator'
+import useActionCreator from 'utils/hooks/action_creator'
 
 const MailsContext = React.createContext()
 
@@ -128,13 +128,13 @@ const reducer = (state, action) => {
 
 export const MailsWrapper = Component => (props) => {
   const [mails, dispatch] = useReducer(reducer, [])
-  const setMails = actionCreator(actions.setMails, dispatch)
-  const removeMessage = actionCreator(actions.removeMessage, dispatch)
-  const removeThread = actionCreator(actions.removeThread, dispatch)
-  const removeMessageLabel = actionCreator(actions.removeMessageLabel, dispatch)
-  const addMessageLabel = actionCreator(actions.addMessageLabel, dispatch)
-  const removeThreadLabel = actionCreator(actions.removeThreadLabel, dispatch)
-  const addThreadLabel = actionCreator(actions.addThreadLabel, dispatch)
+  const setMails = useActionCreator(actions.setMails, dispatch)
+  const removeMessage = useActionCreator(actions.removeMessage, dispatch)
+  const removeThread = useActionCreator(actions.removeThread, dispatch)
+  const removeMessageLabel = useActionCreator(actions.removeMessageLabel, dispatch)
+  const addMessageLabel = useActionCreator(actions.addMessageLabel, dispatch)
+  const removeThreadLabel = useActionCreator(actions.removeThreadLabel, dispatch)
+  const addThreadLabel = useActionCreator(actions.addThreadLabel, dispatch)
 
   return (
     <MailsContext.Provider value={{
