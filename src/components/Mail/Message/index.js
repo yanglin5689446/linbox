@@ -72,6 +72,7 @@ const Message = ({
     <Card
       className={classes.root}
     >
+      <div style={{ display: 'none' }}>{id}</div>
       <CardContent className={classes.cardContent}>
         <Header
           expanded={expanded}
