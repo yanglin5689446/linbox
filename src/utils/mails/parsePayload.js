@@ -21,72 +21,69 @@ const getNameAndMail = (value) => {
 }
 
 
-const fileMimeType = [
-  'application/pdf',
-  'image/jpg',
-]
-
-const parsePayload = ({
-  id, payload: {
-    headers, body, mimeType, parts = [],
-  },
+const parseParts = ({
+  parts, headers, filename, body, mimeType,
 }) => {
-  const findHeader = field => (headers.find(e => e.name === field) || {}).value
+  switch (mimeType) {
+    case 'application/pdf':
+    case 'image/jpeg': {
+      const attachment = {
+        name: filename,
+        type: mimeType,
+        id: body.attachmentId,
+      }
+      const cidHeader = headers.find(header => header.name === 'Content-ID')
+      if (cidHeader) {
+        const cidValue = cidHeader.value
+        attachment.cid = cidValue.slice(1, cidValue.length - 1)
+      }
+
+      return { attachments: [attachment] }
+    }
+    case 'text/html': {
+      const content = new TextDecoder().decode(URLSafeBase64.decode(body.data))
+      return { content }
+    }
+    case 'text/plain': {
+      const content = new TextDecoder().decode(URLSafeBase64.decode(body.data))
+      return { content: `<pre>${content}</pre>` }
+    }
+    case 'multipart/alternative':
+      return parseParts(parts[parts.length - 1])
+    case 'multipart/related':
+    case 'multipart/report':
+    case 'multipart/mixed': {
+      const mixed = parts.map(parseParts)
+      return mixed.reduce((result, current) => ({
+        content: result.content + (current.content || ''),
+        attachments: result.attachments.concat(current.attachments || []),
+      }), { content: '', attachments: [] })
+    }
+    default:
+      return {}
+  }
+}
+
+const parsePayload = ({ id, payload }) => {
+  const findHeader = field => (payload.headers.find(e => e.name === field) || {}).value
 
   const from = getNameAndMail(findHeader('From'))
   const subject = findHeader('Subject') || ''
 
-  const attachments = []
-  parts.forEach((part) => {
-    if (fileMimeType.includes(part.mimeType)) {
-      attachments.push({
-        name: part.filename,
-        id: part.body.attachmentId,
-      })
-    }
-  })
-
-  const info = { from, subject, attachments }
   try {
-    switch (mimeType) {
-      case 'text/html': {
-        const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
-        return { content: parsed, ...info }
-      }
-      case 'text/plain': {
-        const parsed = new TextDecoder().decode(URLSafeBase64.decode(body.data))
-        return { content: `<pre>${parsed}</pre>`, ...info }
-      }
-      case 'multipart/alternative': {
-        const htmlPart = parts.find(part => part.mimeType === 'text/html')
-        const textPart = parts.find(part => part.mimeType === 'text/plain')
-        const p = (htmlPart || textPart)
-        const parsed = new TextDecoder().decode(URLSafeBase64.decode(p.body.data))
-        return { content: parsed, ...info }
-      }
-      case 'multipart/mixed': {
-        const plainTextPart = parts.find(part => part.mimeType === 'text/html')
-        const htmlPart = parts.find(part => part.mimeType === 'text/html')
-        const alternativePart = parts.find(part => part.mimeType === 'multipart/alternative')
-        let parsed
-        if (htmlPart) {
-          parsed = new TextDecoder().decode(URLSafeBase64.decode(htmlPart.body.data))
-        } else if (plainTextPart) {
-          parsed = new TextDecoder().decode(URLSafeBase64.decode(plainTextPart.body.data))
-          parsed = `<pre>${parsed}</pre>`
-        } else if (alternativePart) {
-          const contentPart = alternativePart.parts.find(part => part.mimeType === 'text/html')
-          parsed = new TextDecoder().decode(URLSafeBase64.decode(contentPart.body.data))
-        }
-        return { content: parsed, ...info }
-      }
-      default:
-        return info
+    const { content, attachments = [] } = parseParts(payload)
+    return {
+      from,
+      subject,
+      content,
+      attachments,
     }
   } catch (e) {
     window.debug(`Message ID: ${id}`)
     window.debug(e)
-    return info
+    return {
+      from, subject, content: `Parse failed for Message ${id}`, attachments: [],
+    }
   }
 }
 
