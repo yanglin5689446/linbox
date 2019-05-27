@@ -91,7 +91,7 @@ const Message = ({
           <div
             id={scope.current}
             className={classes.content}
-            dangerouslySetInnerHTML={{ __html: cooked.content }}
+            dangerouslySetInnerHTML={{ __html: cooked.content } /* eslint-disable-line */}
           />
           )
         }

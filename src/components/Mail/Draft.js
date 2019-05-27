@@ -67,6 +67,7 @@ const Draft = ({
         </React.Fragment>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={classes.mails}>
+        {/* eslint-disable-next-line */}
         <div dangerouslySetInnerHTML={{ __html: parsed.content }} />
       </ExpansionPanelDetails>
     </ExpansionPanel>
