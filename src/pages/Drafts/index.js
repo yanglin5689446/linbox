@@ -26,7 +26,7 @@ const Drafts = ({ classes }) => {
       </div>
       {
         Object.values(drafts.drafts)
-          .map(draft => <Draft key={draft.id} draftId={draft.id} {...draft.message} />)
+          .map(draft => <Draft key={draft.id} id={draft.id} {...draft.message} />)
       }
     </div>
   )

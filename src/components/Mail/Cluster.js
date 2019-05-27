@@ -114,6 +114,7 @@ const Cluster = ({
 
   const trash = useCallback((e) => {
     flattenThreads.forEach(({ id }) => removeThreadLabel({ id, label: 'INBOX' }))
+    flattenThreads.forEach(({ id }) => addThreadLabel({ id, label: 'TRASH' }))
     batchModifyMessages({ ids, add: ['TRASH'], remove: ['INBOX'] })
     e.stopPropagation()
   }, [threads])

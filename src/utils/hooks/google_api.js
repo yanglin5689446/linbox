@@ -56,7 +56,11 @@ const useGoogleAPI = () => {
   const initClient = useCallback(() => gapi.load('client:auth2', () => {
     // Initialize the client with API key and People API, and initialize OAuth with an
     // OAuth 2.0 client ID and scopes (space delimited string) to request access.
-    gapi.client.init({
+    if (gapi.auth2.getAuthInstance()) {
+      initUser(gapi.auth2.getAuthInstance().isSignedIn.get())
+      return null
+    }
+    return gapi.client.init({
       apiKey: 'AIzaSyAvRqMi5pnaGVCV14BlEfKGs9xePuhtZk0',
       discoveryDocs: [
         'https://people.googleapis.com/$discovery/rest?version=v1',

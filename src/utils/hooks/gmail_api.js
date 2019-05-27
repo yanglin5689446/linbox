@@ -84,7 +84,8 @@ const useGmailAPI = () => {
     const userId = user.emailAddresses[0].value
     gmailApi.users.drafts.list({ userId })
       .then(({ result }) => Promise.all(
-        result.drafts.map(({ id }) => gmailApi.users.drafts.get({ userId, id })),
+        (result.drafts || [])
+          .map(({ id }) => gmailApi.users.drafts.get({ userId, id })),
       ))
       .then((responses) => {
         const drafts = responses.map(({ result }) => result)

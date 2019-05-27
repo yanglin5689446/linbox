@@ -18,6 +18,7 @@
     "i18next": "^15.0.9",
     "i18next-browser-languagedetector": "^3.0.1",
     "lodash.debounce": "^4.0.8",
+    "lodash.memoize": "^4.1.2",
     "react": "^16.8.6",
     "react-app-rewire-hot-loader": "^2.0.1",
     "react-app-rewired": "^2.1.2",
