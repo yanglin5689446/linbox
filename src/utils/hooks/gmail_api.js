@@ -3,6 +3,7 @@ import { useContext, useCallback } from 'react'
 
 import debounce from 'lodash.debounce'
 
+import LoadingStatusContext, { STATUS } from 'context/loadingStatus'
 import UserContext from 'context/user'
 import MailsContext from 'context/mails'
 import DraftsContext from 'context/drafts'
@@ -12,6 +13,7 @@ import encode from 'utils/mails/encode'
 
 const useGmailAPI = () => {
   const { user } = useContext(UserContext)
+  const { setMailsStatus } = useContext(LoadingStatusContext)
   const { removeMessage, removeThread, setMails } = useContext(MailsContext)
   const { updateLabels } = useContext(LabelsContext)
   const {
@@ -44,6 +46,7 @@ const useGmailAPI = () => {
 
   const loadMails = useCallback(() => {
     const userId = user.emailAddresses[0].value
+    setMailsStatus(STATUS.FETCHING)
     gmailApi.users.threads.list({ userId, maxResults: 10000, includeSpamTrash: true })
       .then(({ result }) => Promise.all(
         result.threads.map(({ id }) => gmailApi.users.threads.get({ userId, id })),
@@ -51,6 +54,7 @@ const useGmailAPI = () => {
       .then((responses) => {
         const threads = responses.map(({ result }) => result)
         setMails(threads)
+        setMailsStatus(STATUS.DONE)
       })
   }, [])
 

@@ -16,6 +16,7 @@ const useProcessedMails = ({
 }) => {
   const { labels } = useContext(LabelsContext)
   const { mails } = useContext(MailsContext)
+
   const final = aggregate
     ? compose(groupByDate, classify(labels))
     : self => self
@@ -25,6 +26,8 @@ const useProcessedMails = ({
     filterByLabel({ includes, excludes }),
     map(extract),
   ), [mails])
+
+
   return process(mails)
 }
 

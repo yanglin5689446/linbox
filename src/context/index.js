@@ -1,5 +1,6 @@
 
 import compose from 'utils/compose'
+import { LoadingStatusWrapper } from './loadingStatus'
 import { DraftsWrapper } from './drafts'
 import { UserWrapper } from './user'
 import { MailsWrapper } from './mails'
@@ -8,6 +9,7 @@ import { LabelsWrapper } from './labels'
 
 
 export default compose(
+  LoadingStatusWrapper,
   LabelsWrapper,
   ContactsWrapper,
   MailsWrapper,
